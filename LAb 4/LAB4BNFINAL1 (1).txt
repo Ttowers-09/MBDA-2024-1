@@ -1,0 +1,450 @@
+--Crear tablas:
+
+CREATE TABLE UNIVERSIDAD(
+    codigo VARCHAR(3) NOT NULL, 
+    nombre VARCHAR(20) NOT NULL,
+    direccion VARCHAR(50) NOT NULL,
+    usuario_codigo VARCHAR (10) NOT NULL
+);
+ 
+CREATE TABLE usuario(
+    codigo VARCHAR(10) NOT NULL, 
+    tid CHAR(2) NOT NULL, 
+    nid VARCHAR(10) NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
+    programa VARCHAR(20) NOT NULL,
+    correo VARCHAR(50) NOT NULL, 
+    registro DATE NOT NULL,
+    suspension DATE,
+    nsuspensines NUMBER(3) NOT NULL,
+    universidad_codigo VARCHAR (3) NOT NULL
+);
+ 
+CREATE TABLE ARTICULO(
+    identificador NUMBER(16) NOT NULL, 
+    descripcion VARCHAR(20) NOT NULL,
+    estado CHAR(1) NOT NULL, 
+    foto VARCHAR(100), 
+    precio NUMBER(3) NOT NULL, 
+    disponible VARCHAR(10) NOT NULL, 
+    categoria_codigo VARCHAR(5) NOT NULL, 
+    usuario_codigo VARCHAR(10) NOT NULL   
+);
+ 
+CREATE TABLE CARACTERISTICA(
+    articulo_id NUMBER(16) NOT NULL,
+    informacion VARCHAR (250) NOT NULL
+);
+ 
+CREATE TABLE perecedero(
+    articulo_id NUMBER(16) NOT NULL, 
+    vencimiento DATE NOT NULL
+);
+ 
+CREATE TABLE ropa(
+    articulo_id NUMBER(16) NOT NULL, 
+    talla VARCHAR(2) NOT NULL,
+    material VARCHAR(10) NOT NULL,
+    color VARCHAR(10) NOT NULL
+);
+  
+CREATE TABLE califica(
+    articulo_id NUMBER(16) NOT NULL, 
+    usuario_codigo VARCHAR(10) NOT NULL,
+    estrellas NUMBER(1) NOT NULL
+);
+  
+CREATE TABLE categoria( 
+    codigo VARCHAR(5) NOT NULL,
+    nombre VARCHAR(20) NOT NULL,
+    tipo CHAR(1) NOT NULL,
+    minimo NUMBER(3) NOT NULL, 
+    maximo NUMBER(3) NOT NULL, 
+    codigo_pertenece VARCHAR(5) NOT NULL
+);
+ 
+CREATE TABLE auditoria(
+    identificador NUMBER(9) NOT NULL, 
+    fecha DATE NOT NULL,
+    accion CHAR(1) NOT NULL, 
+    nombre VARCHAR(20) NOT NULL,
+    categoria_codigo VARCHAR(5) NOT NULL, 
+    evaluacion_a_omes VARCHAR(6) NOT NULL
+);
+ 
+CREATE TABLE evaluacion(
+    a_omes VARCHAR(6) NOT NULL,
+    tid CHAR(2) NOT NULL, 
+    nid VARCHAR(10) NOT NULL,
+    fecha DATE NOT NULL,
+    descripcion CHAR(1), 
+    reporte VARCHAR(100) NOT NULL, 
+    resultado CHAR(2) NOT NULL
+);
+ 
+CREATE TABLE respuesta(
+    evaluacion_a_omes VARCHAR(6) NOT NULL, 
+    informacion VARCHAR(250) NOT NULL 
+);
+
+
+-- Primary Keys
+
+ALTER TABLE universidad ADD CONSTRAINT PK_universidad
+PRIMARY KEY (codigo);
+ 
+ALTER TABLE usuario ADD CONSTRAINT PK_usuario
+PRIMARY KEY (codigo);
+ 
+ALTER TABLE califica ADD CONSTRAINT PK_califica
+PRIMARY KEY (articulo_id, usuario_codigo);
+ 
+ALTER TABLE articulo ADD CONSTRAINT PK_articulo
+PRIMARY KEY (identificador);
+ 
+ALTER TABLE caracteristica ADD CONSTRAINT PK_caracteristica
+PRIMARY KEY (articulo_id, informacion);
+ 
+ALTER TABLE perecedero ADD CONSTRAINT PK_perecedero
+PRIMARY KEY (articulo_id);
+ 
+ALTER TABLE ropa ADD CONSTRAINT PK_ropa
+PRIMARY KEY (articulo_id);
+ 
+ALTER TABLE categoria ADD CONSTRAINT PK_categoria
+PRIMARY KEY (codigo);
+ 
+ALTER TABLE auditoria ADD CONSTRAINT PK_auditoria
+PRIMARY KEY (identificador);
+ 
+ALTER TABLE evaluacion ADD CONSTRAINT PK_evaluacion 
+PRIMARY KEY (a_omes);
+ 
+ALTER TABLE respuesta ADD CONSTRAINT PK_respuesta 
+PRIMARY KEY (evaluacion_a_omes, informacion);
+
+
+--Foreing Keys
+
+ALTER TABLE universidad ADD CONSTRAINT FK_universidad
+FOREIGN KEY (usuario_codigo) REFERENCES usuario(codigo);
+ 
+ALTER TABLE usuario ADD CONSTRAINT FK_usuario
+FOREIGN KEY (universidad_codigo) REFERENCES universidad(codigo);
+ 
+ALTER TABLE articulo  ADD CONSTRAINT FK_articulo
+FOREIGN KEY (usuario_codigo) REFERENCES usuario(codigo);
+ 
+ALTER TABLE articulo ADD CONSTRAINT FK_articulo1
+FOREIGN KEY (categoria_codigo) REFERENCES categoria(codigo);
+ 
+ALTER TABLE caracteristica ADD CONSTRAINT FK_caracteristicas_articulos
+FOREIGN KEY (articulo_id) REFERENCES articulo(identificador);
+ 
+ALTER TABLE perecedero ADD CONSTRAINT FK_perecedero
+FOREIGN KEY (articulo_id) REFERENCES articulo(identificador);
+ 
+ALTER TABLE ropa ADD CONSTRAINT FK_ropa
+FOREIGN KEY (articulo_id) REFERENCES articulo(identificador);
+ 
+ALTER TABLE califica ADD CONSTRAINT FK_califica
+FOREIGN KEY (articulo_id) REFERENCES articulo(identificador);
+ 
+ALTER TABLE califica ADD CONSTRAINT FK_califica1
+FOREIGN KEY (usuario_codigo) REFERENCES usuario(codigo);
+ 
+ALTER TABLE categoria ADD CONSTRAINT FK_categoria
+FOREIGN KEY (codigo_pertenece) REFERENCES categoria(codigo);
+ 
+ALTER TABLE auditoria ADD CONSTRAINT FK_auditoria
+FOREIGN KEY (evaluacion_a_omes) REFERENCES evaluacion(a_omes);
+ 
+ALTER TABLE auditoria ADD CONSTRAINT FK_auditoria1
+FOREIGN KEY (categoria_codigo) REFERENCES categoria(codigo);
+ 
+ALTER TABLE respuesta ADD CONSTRAINT FK_respuesta
+FOREIGN KEY (evaluacion_a_omes) REFERENCES evaluacion(a_omes);
+
+
+--Unique Keys
+ALTER TABLE usuario ADD CONSTRAINT UK_usuario
+UNIQUE(tid,nid);
+
+ALTER TABLE articulo ADD CONSTRAINT UK_articulo
+UNIQUE(foto);
+
+ALTER TABLE evaluacion ADD CONSTRAINT UK_evaluacion
+UNIQUE(reporte);
+
+--Checks
+
+ALTER TABLE AUDITORIA 
+ADD CONSTRAINT T_ACCION CHECK (accion IN ('I','D','U'));
+
+ALTER TABLE EVALUACION 
+ADD CONSTRAINT T_AM CHECK (TO_NUMBER(SUBSTR(a_omes,1,4))>2000 AND TO_NUMBER(SUBSTR(a_omes,5,6)) BETWEEN 1 AND 12);
+
+ALTER TABLE AUDITORIA 
+ADD CONSTRAINT T_CONSECUTIVO CHECK (identificador BETWEEN 0 AND 999999999);
+
+ALTER TABLE USUARIO
+ADD CONSTRAINT T_CORREO CHECK (REGEXP_LIKE(correo, '^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$'));
+
+ALTER TABLE EVALUACION 
+ADD CONSTRAINT T_DESCRIPCION CHECK (descripcion IN ('B', 'A','M'));
+
+ALTER TABLE ARTICULO 
+ADD CONSTRAINT T_ESTADO CHECK (estado IN ('U', 'N'));
+
+ALTER TABLE CALIFICA
+ADD CONSTRAINT T_ESTRELLAS CHECK (estrellas BETWEEN 1 AND 5);
+
+ALTER TABLE USUARIO 
+ADD CONSTRAINT T_Id CHECK (tid IN ('CC','TI'));
+
+ALTER TABLE EVALUACION 
+ADD CONSTRAINT T_Id1 CHECK (tid IN ('CC','TI'));
+
+ALTER TABLE ARTICULO 
+ADD CONSTRAINT T_IDARTICULO CHECK (identificador > 0);
+
+ALTER TABLE ARTICULO 
+ADD CONSTRAINT T_MONEDAARTICULO CHECK (precio > 0 AND MOD(precio, 50) = 0);
+
+ALTER TABLE CATEGORIA 
+ADD CONSTRAINT T_MONEDACATEORIA CHECK (minimo > 0 AND MOD(minimo, 50) = 0);
+
+ALTER TABLE CATEGORIA 
+ADD CONSTRAINT T_MONEDACATEORIA1 CHECK (maximo > 0 AND MOD(maximo, 50) = 0);
+
+ALTER TABLE CATEGORIA 
+ADD CONSTRAINT T_VALIDACIONCATEGORIA CHECK(minimo < maximo);
+
+ALTER TABLE EVALUACION 
+ADD CONSTRAINT T_RESULTADO CHECK (resultado IN ('AP','PE'));
+
+ALTER TABLE ROPA 
+ADD CONSTRAINT T_TALLA CHECK (talla IN ('XS', 'S', 'M','L','XL'));
+
+ALTER TABLE CATEGORIA 
+ADD CONSTRAINT T_TIPO CHECK (tipo IN ('A','R','L','T','O'));
+
+ALTER TABLE ARTICULO 
+ADD CONSTRAINT T_URL CHECK (REGEXP_LIKE(foto, '^https://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/[a-zA-Z0-9]+\.(pdf)$'));
+
+ALTER TABLE EVALUACION 
+ADD CONSTRAINT T_URL1 CHECK (REGEXP_LIKE(reporte, '^https://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/[a-zA-Z0-9]+\.(pdf)$'));
+
+---tuplas
+ALTER TABLE categoria
+ADD CONSTRAINT check_minimo_maximo CHECK (minimo < maximo);
+
+---TuplasOk
+INSERT INTO CATEGORIA (CODIGO, NOMBRE, TIPO, MINIMO, MAXIMO, CODIGO_PERTENECE)
+VALUES (123, 'ivan', 'A', 250, 500, 123);
+
+--Tuplas NoOk
+--INSERT INTO CATEGORIA (CODIGO, NOMBRE, TIPO, MINIMO, MAXIMO, CODIGO_PERTENECE) 
+--VALUES (123, 'ivan', 'A', 550, 500, 123);
+
+
+----- TRIGGERS CATEGORIA INSERT
+
+CREATE TRIGGER TG_CATEGORIA_NOMBRECODIGO
+BEFORE INSERT ON CATEGORIA
+FOR EACH ROW
+BEGIN
+    --Si no se indica el nombre se le asigna. ‘Nombre de ‘<codigo>
+    IF :NEW.codigo IS NULL THEN
+        :NEW.codigo := 'Nombre de';
+    
+    --Los códigos deben iniciar con una letra mayúscula
+    ELSE
+        :NEW.codigo := UPPER(SUBSTR(:NEW.codigo, 1, 1)) || SUBSTR(:NEW.codigo, 2);
+    END IF;
+END;
+/
+
+INSERT INTO CATEGORIA (CODIGO, NOMBRE, TIPO, MINIMO, MAXIMO, CODIGO_PERTENECE)
+VALUES (133, 'ivan', 'A', 250, 500, 133);
+
+--INSERT INTO CATEGORIA (CODIGO, NOMBRE, TIPO, MINIMO, MAXIMO, CODIGO_PERTENECE)
+--VALUES ('cvan', 'ivan', 'A', 250, 500, 'cvan');
+
+
+CREATE TRIGGER TG_CATEGORIA_MAXIMO_MINIMO
+BEFORE INSERT ON CATEGORIA
+FOR EACH ROW
+BEGIN
+    --Si no se indica el precio máximo se supone que es el doble del mínimo
+    IF :NEW.maximo IS NULL THEN
+        :NEW.maximo := :NEW.minimo*2;
+    END IF;
+END;
+/
+
+INSERT INTO CATEGORIA (CODIGO, NOMBRE, TIPO, MINIMO, MAXIMO, CODIGO_PERTENECE)
+VALUES (001, 'ivan', 'A', 250, null, 001);
+
+----- TRIGGERS CATEGORIA UPDATE
+
+CREATE TRIGGER TG_CATEGORIA_MODIFICAR
+BEFORE UPDATE ON CATEGORIA
+FOR EACH ROW
+BEGIN
+    --Los únicos datos que se pueden modificar son el mínimo y el máximo. Únicamente pueden aumentar.
+    IF :OLD.minimo > :NEW.minimo THEN
+        :NEW.minimo := :OLD.minimo;
+    END IF;
+
+    IF :OLD.maximo > :NEW.maximo THEN
+        :NEW.maximo := :OLD.maximo;
+    END IF;
+END;
+/
+
+INSERT INTO CATEGORIA (CODIGO, NOMBRE, TIPO, MINIMO, MAXIMO, CODIGO_PERTENECE)
+VALUES (341, 'ivan', 'A', 250, 500, 341);
+
+INSERT INTO CATEGORIA (CODIGO, NOMBRE, TIPO, MINIMO, MAXIMO, CODIGO_PERTENECE)
+VALUES (441, 'ivan', 'A', 300, 550, 441);
+
+CREATE TRIGGER TG_CATEGORIA_MIN_MAX
+BEFORE UPDATE ON CATEGORIA
+FOR EACH ROW
+BEGIN
+    --Si se modifica el mínimo, el máximo debe modificarse en el mismo valor.
+    IF :NEW.minimo <> :OLD.minimo AND :NEW.minimo > :OLD.minimo AND :NEW.maximo = :OLD.maximo THEN
+        :NEW.maximo := :NEW.maximo + ABS(:NEW.minimo - :OLD.minimo);
+    END IF;
+END;
+/
+
+INSERT INTO CATEGORIA (CODIGO, NOMBRE, TIPO, MINIMO, MAXIMO, CODIGO_PERTENECE)
+VALUES (741, 'ivan', 'A', 200, 300, 741);
+
+--INSERT INTO CATEGORIA (CODIGO, NOMBRE, TIPO, MINIMO, MAXIMO, CODIGO_PERTENECE)
+--VALUES (561, 'ivan', 'A', 200, 200, 561);
+
+----- TRIGGERS CATEGORIA DELETE
+
+CREATE TRIGGER TG_CATEGORIA_ELIMINAR
+BEFORE DELETE ON CATEGORIA
+FOR EACH ROW
+DECLARE
+    ARTICULOS NUMBER;
+    CATEGORIAS NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO ARTICULOS
+    FROM ARTICULO
+    WHERE categoria_codigo = :OLD.codigo;
+
+    SELECT COUNT(*) INTO CATEGORIAS
+    FROM CATEGORIA
+    WHERE codigo_pertenece = :OLD.codigo;
+
+    --Únicamente se pueden eliminar las categorias que no tienen artículos asociados
+    IF ARTICULOS + CATEGORIAS <> 0 THEN
+        RAISE_APPLICATION_ERROR(-20005, 'No se puede eliminar la categoría porque tiene artículos asociados y/o es una supercategoria.');
+    END IF;
+END;
+/
+
+--- triggers evaluacion
+--La fecha de la evaluación se genera automáticamente y debe ser posterior al año-mes evaluado--
+
+CREATE OR REPLACE TRIGGER TG_ADICIONAR
+BEFORE INSERT ON Evaluacion
+FOR EACH ROW
+BEGIN
+    :NEW.fecha := SYSDATE;
+    IF TO_NUMBER(:NEW.a_omes) > TO_NUMBER(TO_CHAR(SYSDATE, 'YYYYMM')) THEN
+        RAISE_APPLICATION_ERROR(-20000, 'La fecha de la evaluación debe ser posterior al año-mes evaluado.');
+    END IF;
+END;
+/
+--Disparador1 OK Caso2--
+INSERT INTO Evaluacion (a_omes, tid, nid, descripcion, reporte, resultado) VALUES ('202101', 'CC', '456', 'A', 'https://www.evaluacion.com/reporte1.pdf', 'AP');
+
+--Disparador1 NoOK Caso2
+--INSERT INTO Evaluacion (a_omes, tid, nid, descripcion, reporte, resultado) VALUES ('202805', 'TI', '130', 'A', 'https://www.evaluacion.com/reporte25.pdf', 'AP');
+
+
+
+--Documento por defecto de los auditores de no informarse es: CC
+CREATE OR REPLACE TRIGGER TG_ADICIONAR2
+BEFORE INSERT ON Evaluacion
+FOR EACH ROW
+BEGIN
+    IF :NEW.tid IS NULL THEN
+        :NEW.tid := 'CC';
+    END IF;
+END;
+/
+
+--Disparador2OK Caso2--
+INSERT INTO Evaluacion (a_omes, nid, descripcion, reporte, resultado) VALUES ('202201', '1234', 'A', 'https://www.evaluacion.com/reporte.pdf', 'AP');
+INSERT INTO Evaluacion (a_omes, tid, nid, descripcion, reporte, resultado) VALUES ('202103', 'TI', '8952', 'A', 'https://www.evaluacion.com/reporte2.pdf', 'AP');
+
+
+-- Eliminar evaluaciones sin anomalías
+CREATE OR REPLACE TRIGGER TG_DELETE
+BEFORE DELETE ON Evaluacion
+FOR EACH ROW
+BEGIN
+    IF :OLD.descripcion IS NOT NULL THEN
+        RAISE_APPLICATION_ERROR(-20001, 'No se puede eliminar una evaluación con anomalías.');
+    END IF;
+END;
+/
+
+
+--Disparador3OK Caso2--
+INSERT INTO Evaluacion (a_omes, nid, reporte, resultado) VALUES ('202202', '12345', 'https://www.evaluacion.com/reporte3.pdf', 'AP');
+
+--Disparador3NoOK Caso2--
+--DELETE FROM Evaluacion WHERE descripcion IS NOT NULL;
+
+
+-- Modificar resultado de auditorías
+CREATE OR REPLACE TRIGGER TG_MODIFICAR
+BEFORE UPDATE ON EVALUACION
+FOR EACH ROW
+BEGIN
+    IF :OLD.resultado != 'PE' THEN
+        RAISE_APPLICATION_ERROR(-20002, 'No se puede modificar el resultado de una auditoría con estado distinto a pendiente.');
+    END IF;
+END;
+/
+
+
+--Disparador4OK caso 2
+INSERT INTO Evaluacion (a_omes, nid, reporte, resultado) VALUES ('202205', '65102', 'https://www.evaluacion.com/reporte4.pdf', 'PE');
+
+--Disparador4NOOK caso 2
+--INSERT INTO Evaluacion (a_omes, nid, reporte, resultado) VALUES ('202201', '65103', 'https://www.evaluacion.com/reporte5.pdf', 'AP');
+
+--XDisparadores
+DROP TRIGGER TG_CATEGORIA_NOMBRECODIGO;
+DROP TRIGGER TG_CATEGORIA_MAXIMO_MINIMO;
+DROP TRIGGER TG_CATEGORIA_MODIFICAR;
+DROP TRIGGER TG_CATEGORIA_MIN_MAX;
+DROP TRIGGER TG_CATEGORIA_ELIMINAR;
+DROP TRIGGER TG_ADICIONAR;
+DROP TRIGGER TG_ADICIONAR2;
+DROP TRIGGER TG_DELETE;
+DROP TRIGGER TG_MODIFICAR;
+
+--Xtablas
+
+DROP TABLE UNIVERSIDAD CASCADE CONSTRAINTS;
+DROP TABLE USUARIO CASCADE CONSTRAINTS;
+DROP TABLE ARTICULO CASCADE CONSTRAINTS;
+DROP TABLE CARACTERISTICA CASCADE CONSTRAINTS;
+DROP TABLE PERECEDERO CASCADE CONSTRAINTS;
+DROP TABLE ROPA CASCADE CONSTRAINTS;
+DROP TABLE CATEGORIA CASCADE CONSTRAINTS;
+DROP TABLE CALIFICA CASCADE CONSTRAINTS;
+DROP TABLE EVALUACION CASCADE CONSTRAINTS;
+DROP TABLE RESPUESTA CASCADE CONSTRAINTS;
+DROP TABLE AUDITORIA CASCADE CONSTRAINTS;
