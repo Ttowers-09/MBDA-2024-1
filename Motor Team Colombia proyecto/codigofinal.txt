@@ -1,0 +1,2255 @@
+-- CREACION DE TABLAS**
+
+CREATE TABLE VENDEDORES (
+identificador VARCHAR(20) NOT NULL,
+nombre VARCHAR(20) NOT NULL,
+nit VARCHAR(20) NOT NULL,
+correo VARCHAR(50) NOT NULL,
+direccion VARCHAR(50) NOT NULL,
+telefono VARCHAR(20) NOT NULL,
+descripcion VARCHAR(250) NOT NULL,
+FechaDeRegistro DATE NOT NULL,
+categorias_identificador VARCHAR(10) NULL
+);
+
+CREATE TABLE COMPRAS (
+identificador VARCHAR(10) NOT NULL,
+descripcion VARCHAR(250) NOT NULL,
+FechaCompras DATE NOT NULL,
+PrecioTotal VARCHAR(25) NOT NULL,
+vendedores_identificador VARCHAR(20) NULL
+);
+
+CREATE TABLE ITEMSCOMPRAS (
+identificador VARCHAR(10) NOT NULL,
+cantidad VARCHAR(10) NOT NULL,
+precio VARCHAR(50) NOT NULL,
+compras_identificador VARCHAR(10) NOT NULL,
+partes_identificador VARCHAR(10) NOT NULL
+
+
+);
+
+CREATE TABLE PARTES (
+
+identificador VARCHAR(10) NOT NULL,
+nombre VARCHAR(250) NOT NULL,
+peso VARCHAR(50) NULL,
+descripcion VARCHAR(250) NOT NULL,
+PrecioCompra VARCHAR(20) NOT NULL,
+PrecioVenta VARCHAR(20) NOT NULL,
+categorias_identificador VARCHAR(10) NOT NULL,
+garantias_identificador VARCHAR(10) NOT NULL,
+stock number NOT NULL
+);
+
+CREATE TABLE CATEGORIAS (
+identificador VARCHAR(10) NOT NULL,
+nombre VARCHAR(20) NOT NULL,
+descripcion VARCHAR(250) NOT NULL
+
+);
+
+CREATE TABLE ITEMSVENTAS (
+
+identificador VARCHAR(10) NOT NULL,
+cantidad VARCHAR(10) NOT NULL,
+precio VARCHAR(50) NOT NULL,
+partes_identificador VARCHAR(10) NOT NULL,
+ventas_identificador VARCHAR(10) NOT NULL
+
+);
+
+CREATE TABLE VENTAS (
+identificador VARCHAR(10) NOT NULL,
+descripcion VARCHAR(250) NOT NULL,
+FechaVentas DATE NOT NULL,
+CantidadPartes VARCHAR(10) NOT NULL,
+compradores_identificador VARCHAR(10) NOT NULL,
+PrecioTotal VARCHAR(20)
+);
+
+CREATE TABLE GARANTIAS (
+identificador VARCHAR(10) NULL,
+DescripcionMotivo VARCHAR(250) NULL
+);
+
+CREATE TABLE REPARACIONES (
+garantias_identificador VARCHAR(10) NULL,
+DescripcionDanoParte VARCHAR (250) NULL,
+DescripcionSolucion VARCHAR(250) NULL
+
+);
+
+CREATE TABLE REEMPLAZOS (
+garantias_identificador VARCHAR(10) NULL,
+DescripcionDanos VARCHAR(250) NULL,
+PiezasCambio VARCHAR(250) NULL
+
+);
+
+CREATE TABLE COMPRADORES (
+identificador VARCHAR(10) NOT NULL,
+nombre VARCHAR(250) NOT NULL,
+descripcion VARCHAR(250),
+preferencias VARCHAR(250) NOT NULL,
+correo VARCHAR(50) NOT NULL,
+direccion VARCHAR(50) NOT NULL,
+FechaDeRegistro DATE NOT NULL
+
+);
+
+CREATE TABLE VEHICULOS (
+marca VARCHAR(20) NOT NULL,
+modelo VARCHAR(50) NOT NULL,
+carroceria VARCHAR(20) NOT NULL,
+cilindrada INT NOT NULL,
+modificaciones VARCHAR(250) NULL,
+placa VARCHAR(6) NOT NULL,
+compradores_identificador VARCHAR(10) NOT NULL
+
+);
+
+
+
+---PRIMARY KEY--
+
+ALTER TABLE COMPRAS ADD CONSTRAINT PK_COMPRAS
+PRIMARY KEY(IDENTIFICADOR);
+
+ALTER TABLE ITEMSCOMPRAS ADD CONSTRAINT PK_ITEMSCOMPRAS
+PRIMARY KEY (IDENTIFICADOR, COMPRAS_IDENTIFICADOR);
+
+ALTER TABLE ITEMSVENTAS ADD CONSTRAINT PK_ITEMSVENTAS
+PRIMARY KEY (IDENTIFICADOR);
+
+ALTER TABLE PARTES ADD CONSTRAINT PK_PARTES
+PRIMARY KEY (IDENTIFICADOR);
+
+ALTER TABLE VENDEDORES ADD CONSTRAINT PK_VENDEDORES
+PRIMARY KEY (IDENTIFICADOR);
+
+ALTER TABLE VENTAS ADD CONSTRAINT PK_VENTAS
+PRIMARY KEY (IDENTIFICADOR);
+
+ALTER TABLE CATEGORIAS ADD CONSTRAINT PK_CATEGORIAS
+PRIMARY KEY (IDENTIFICADOR);
+
+ALTER TABLE COMPRADORES ADD CONSTRAINT PK_COMPRADORES
+PRIMARY KEY (IDENTIFICADOR);
+
+ALTER TABLE REEMPLAZOS ADD CONSTRAINT PK_REEMPLAZOS
+PRIMARY KEY (GARANTIAS_IDENTIFICADOR);
+
+ALTER TABLE REPARACIONES ADD CONSTRAINT PK_REPARACIONES
+PRIMARY KEY (GARANTIAS_IDENTIFICADOR);
+
+ALTER TABLE VEHICULOS ADD CONSTRAINT PK_VEHICULOS
+PRIMARY KEY (PLACA);
+
+ALTER TABLE GARANTIAS ADD CONSTRAINT PK_GARANTIAS
+PRIMARY KEY (IDENTIFICADOR);
+
+
+
+
+
+--FOREING KEY--
+--FOREING KEY--
+ALTER TABLE VENDEDORES ADD CONSTRAINT FK_VENDEDORES_CATEGORIAS
+FOREIGN KEY (CATEGORIAS_IDENTIFICADOR) REFERENCES CATEGORIAS(IDENTIFICADOR);
+
+ALTER TABLE COMPRAS ADD CONSTRAINT FK_COMPRAS_VENDEDORES
+FOREIGN KEY (VENDEDORES_IDENTIFICADOR) REFERENCES VENDEDORES(IDENTIFICADOR)
+ON DELETE SET NULL;
+
+ALTER TABLE ITEMSCOMPRAS ADD CONSTRAINT FK_ITEMSCOMPRAS_COMPRA
+FOREIGN KEY (COMPRAS_IDENTIFICADOR) REFERENCES COMPRAS(IDENTIFICADOR)ON DELETE CASCADE;
+
+ALTER TABLE ITEMSCOMPRAS ADD CONSTRAINT FK_ITEMSCOMPRAS_PARTES
+FOREIGN KEY (PARTES_IDENTIFICADOR) REFERENCES PARTES(IDENTIFICADOR);
+
+ALTER TABLE PARTES ADD CONSTRAINT FK_PARTES_CATEGORIAS
+FOREIGN KEY (CATEGORIAS_IDENTIFICADOR) REFERENCES CATEGORIAS(IDENTIFICADOR);
+
+ALTER TABLE PARTES ADD CONSTRAINT FK_PARTES_GARANTIAS
+FOREIGN KEY (GARANTIAS_IDENTIFICADOR) REFERENCES GARANTIAS(IDENTIFICADOR);
+
+ALTER TABLE REPARACIONES ADD CONSTRAINT FK_REPARACIONES_GARANTIAS
+FOREIGN KEY (GARANTIAS_IDENTIFICADOR) REFERENCES GARANTIAS(IDENTIFICADOR)
+ON DELETE CASCADE;
+
+ALTER TABLE REEMPLAZOS ADD CONSTRAINT FK_REEMPLAZOS_GARANTIAS
+FOREIGN KEY (GARANTIAS_IDENTIFICADOR) REFERENCES GARANTIAS (IDENTIFICADOR)
+ON DELETE CASCADE;
+
+ALTER TABLE ITEMSVENTAS ADD CONSTRAINT FK_ITEMSVENTAS_PARTES
+FOREIGN KEY (PARTES_IDENTIFICADOR) REFERENCES PARTES(IDENTIFICADOR);
+
+ALTER TABLE ITEMSVENTAS ADD CONSTRAINT FK_ITEMSVENTAS_VENTAS
+FOREIGN KEY (VENTAS_IDENTIFICADOR) REFERENCES VENTAS(IDENTIFICADOR)ON DELETE CASCADE;
+
+ALTER TABLE VENTAS ADD CONSTRAINT FK_VENTAS_COMPRADORES
+FOREIGN KEY (COMPRADORES_IDENTIFICADOR) REFERENCES COMPRADORES(IDENTIFICADOR);
+
+ALTER TABLE VEHICULOS ADD CONSTRAINT FK_VEHICULOS_COMPRADORES
+FOREIGN KEY (COMPRADORES_IDENTIFICADOR) REFERENCES COMPRADORES(IDENTIFICADOR)
+ON DELETE CASCADE;
+
+
+
+
+--UNICAS--
+ALTER TABLE VENDEDORES ADD CONSTRAINT UK_VENDEDORES 
+UNIQUE (nit);
+
+ALTER TABLE VENDEDORES ADD CONSTRAINT UK_VENDEDORES2 
+UNIQUE (correo);
+
+ALTER TABLE CATEGORIAS ADD CONSTRAINT UK_CATEGORIAS
+UNIQUE (nombre);
+
+
+
+--CHECKS
+--CHECKS
+ALTER TABLE VENDEDORES
+ADD CONSTRAINT UNIQUE_T_CORREO CHECK (REGEXP_LIKE(correo, '^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$'));
+
+ALTER TABLE COMPRADORES ADD CONSTRAINT T_CORREO1
+CHECK (REGEXP_LIKE(correo, '^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$'));
+
+ALTER TABLE VENDEDORES
+ADD CONSTRAINT TDIRECCIONVENDEDORES CHECK (direccion LIKE '%#%');
+
+ALTER TABLE COMPRADORES
+ADD CONSTRAINT TDIRECCIONCOMPRADORES CHECK (direccion LIKE '%#%');
+
+ALTER TABLE COMPRAS
+ADD CONSTRAINT T_MONEDACOMPRAS CHECK (PrecioTotal > 0 AND MOD(PrecioTotal, 100) = 0);
+
+ALTER TABLE VENTAS
+ADD CONSTRAINT T_MONEDAVENTAS CHECK (PrecioTotal > 0 AND MOD(PrecioTotal, 100) = 0);
+
+ALTER TABLE PARTES 
+ADD CONSTRAINT T_MONEDAPARTES CHECK (PrecioCompra > 0 AND MOD(PrecioCompra, 10) = 0);
+
+ALTER TABLE PARTES 
+ADD CONSTRAINT T_MONEDAPARTES1 CHECK (PrecioVenta > 0 AND MOD(PrecioVenta, 10) = 0);
+
+ALTER TABLE PARTES 
+ADD CONSTRAINT T_STOCK CHECK (stock > 0);
+
+ALTER TABLE ITEMSCOMPRAS 
+ADD CONSTRAINT T_MONEDAITEMSCOMPRAS CHECK (precio > 0 AND MOD(precio, 100) = 0);
+
+ALTER TABLE ITEMSCOMPRAS 
+ADD CONSTRAINT T_cantidad CHECK (cantidad > 0);
+
+ALTER TABLE ITEMSVENTAS 
+ADD CONSTRAINT T_MONEDAITEMSVENTAS CHECK (precio > 0 AND MOD(precio, 100) = 0);
+
+ALTER TABLE PARTES
+ADD CONSTRAINT T_PESO CHECK (peso BETWEEN 01 AND 99);
+
+
+--Poblar
+--CATEGORIAS
+insert into CATEGORIAS (identificador, nombre, descripcion) values ('Ca1', 'Suspensi n', 'amortiguaci n y direcci n al veh culo');
+insert into CATEGORIAS values ('Ca2', 'Frenos', 'Sistema en reduccion de velocidad, discos, pastillas, calipers');
+insert into CATEGORIAS values ('Ca3', 'Motor', 'Componentes internos en la combustion piston, bielas, bloques');
+insert into CATEGORIAS values ('Ca4', 'Lujos', 'Lujos del vehiculo, rines, pintura, accesorios');
+insert into CATEGORIAS values ('Ca5', 'Carroceria', 'Bodykits, puertas, stops');
+insert into CATEGORIAS values ('Ca6', 'Electr nica', 'Sistema de electricidad');
+insert into CATEGORIAS values ('Ca7', 'Neum ticos', 'Neumaticos');
+insert into CATEGORIAS values ('Ca8', 'Otros', 'Otros componentes');
+insert into CATEGORIAS values ('Ca9', 'Puertas', 'Puertas');
+insert into CATEGORIAS values ('Ca10', 'Asientos', 'Asientos');
+insert into CATEGORIAS values ('Ca11', 'Rines', 'Rines');
+insert into CATEGORIAS values ('Ca12', 'Pintura', 'Pintura');
+insert into CATEGORIAS values ('Ca13', 'Accesorios', 'Accesorios');
+insert into CATEGORIAS values ('Ca14', 'Sistema de escape', 'Sistema de escape');
+insert into CATEGORIAS values ('Ca15', 'direcci n', ' direcci n');
+insert into CATEGORIAS values ('Ca16', 'Sis refrigeraci n', 'refrigeraci n');
+insert into CATEGORIAS values ('Ca17', 'Radiadores', 'Radiadores');
+insert into CATEGORIAS values ('Ca18', 'Parrillas', 'Parrillas');
+insert into CATEGORIAS values ('Ca19', ' iluminaci n', 'iluminaci n');
+insert into CATEGORIAS values ('Ca20', 'Sistema de audio', 'Sistema de audio');
+insert into CATEGORIAS values ('Ca21', 'Sistema de seguridad', 'Sistema de seguridad');
+insert into CATEGORIAS values ('Ca22', 'sus neumatica', 'Sistema neumatica');
+insert into CATEGORIAS values ('Ca23', 'Refrigerantes','Refrigerantes');
+insert into CATEGORIAS values ('Ca24', 'Aceites', 'Aceites');
+insert into CATEGORIAS values ('Ca25', 'Filtros', 'Filtros');
+insert into CATEGORIAS values ('Ca26', 'Pulimentos', 'Pulimentos');
+insert into CATEGORIAS values ('Ca27', 'Llantas runflat', 'Llantas runflat');
+insert into CATEGORIAS values ('Ca28', 'Llantas de invierno', 'Llantas de invierno');
+insert into CATEGORIAS values ('Ca29', 'Llantas de verano', 'Llantas de verano');
+insert into CATEGORIAS values ('Ca30', 'competici n', 'Llantas competici n');
+insert into CATEGORIAS values ('Ca31', 'Llantas de 4x4', 'Llantas de 4x4');
+insert into CATEGORIAS values ('Ca32', 'Llantas de moto', 'Llantas de moto');
+insert into CATEGORIAS values ('Ca33', 'Llantas de Dragster', 'Llantas de Gragster');
+insert into CATEGORIAS values ('Ca34', 'Llantas de Quad', 'Llantas de Quad');
+insert into CATEGORIAS values ('Ca35', 'Llantas de Kart', 'Llantas de Kart');
+insert into CATEGORIAS values ('Ca36', 'Tornilleria', 'Tornilleria');
+insert into CATEGORIAS values ('Ca37', 'Tuercas', 'Tuercas');
+insert into CATEGORIAS values ('Ca38', 'Arandelas', 'Arandelas');
+insert into CATEGORIAS values ('Ca39', 'Tornillos', 'Tornillos');
+insert into CATEGORIAS values ('Ca40', 'Pernos', 'Pernos');
+insert into CATEGORIAS values ('Ca41', 'Tor de competici n', 'competici n');
+insert into CATEGORIAS values ('Ca42', 'Tor de aluminio', 'aluminio');
+insert into CATEGORIAS values ('Ca43', 'Tor de titanio', ' titanio');
+insert into CATEGORIAS values ('Ca44', 'Tor de acero', 'acero');
+insert into CATEGORIAS values ('Ca45', 'Tor de inoxidable', 'inoxidable');
+insert into CATEGORIAS values ('Ca46', 'Tor de lat n', 'lat n');
+insert into CATEGORIAS values ('Ca47', 'Tor de cobre', 'Tornilleria cobre');
+insert into CATEGORIAS values ('Ca48', 'Oxido Nitroso', 'Oxido Nitroso');
+insert into CATEGORIAS values ('Ca49', 'inyecci n', 'Sistemas inyecci n');
+insert into CATEGORIAS values ('Ca50', 'admisi n', 'Sistemas admisi n');
+
+
+
+--VENDEDORES
+insert into VENDEDORES (identificador, nombre, nit, correo, direccion, telefono, descripcion, FechaDeRegistro, categorias_identificador) values ('V1', 'AxleWorks', 22222225552222221312, 'sales@business.com', 'CRA 2 # 5-20 Zipaquira', 12345678901234568, 'variedad de partes para autom viles', '18/10/2018', 'Ca3');
+insert into VENDEDORES values ('V2', 'WheelWorks', 88888888888888885248, 'support@service.org', 'Calle Sol #123', 999888777666555, 'empresa especializada en importacion y fabricacion de BodyKits', '18/10/2018', 'Ca5');
+insert into VENDEDORES values ('V3', 'BrakeForce', 22222222222222221312, 'webmaster@site.com', 'Carrera 7 Este #890', 555123456789012352, 'componentes de transmisi n o sistemas de tracci n', '28/09/2005', 'Ca2');
+insert into VENDEDORES values ('V4', 'GearMasters', 1000000000000000000, 'user123@domain.co', 'Avenida 5 de Mayo #678', 1234567890, 'partes interiores o exteriores del veh culo como molduras o acabados', '28/09/2005', 'Ca4');
+insert into VENDEDORES values ('V5', 'TurboCorp', 33333333333333331968, 'admin@example.com', 'Avenida Libertador Este #789', 999888777666555392, 'fabricaci n de componentes de turbo', '28/09/2005', 'Ca3');
+insert into VENDEDORES values ('V6', 'TireForce', 44444441789654023665, 'TireForce@domain.com', 'Calle 66 #4-50', 412598451203698745, 'fabricacion de llantas 4x4', '29/12/2008', 'Ca31');
+insert into VENDEDORES values ('V7', 'RacingParts', 55555555555555555555, 'RPartes@site.com', 'Avenida 35 #5-45', 123654789654123654, 'Fabricacion partes de carreras', '15/05/2023', 'Ca48');
+insert into VENDEDORES values ('V8', 'RacingElement', 21036541203698745210, 'Relement@mail.com', 'Transversal 48 #5-78',459841023598741568, 'Fabricacion cupulas de carreras', '14/05/2008', 'Ca24');
+insert into VENDEDORES values ('V9', 'RacingTires', 12345678910111247895, 'Tires@yahoo.vom', 'calle 14 #4-45', 1478965412365874, 'Fabricacion llantas de carreras', '18/09/2023', 'Ca20');
+insert into VENDEDORES values ('V10', 'CopperBolts', 4345678901234567890, 'info@copperbolts.com', 'Avenida del Este #678', 3043456789, 'Tornillería de cobre de alta calidad', '11/05/2060', 'Ca47');
+insert into VENDEDORES values ('V11', 'NitroBoosters', 2223344556677889900, 'info@nitroboosters.com', 'Calle 12 # 34-56', 3001234567, 'Especialistas en sistemas de óxido nitroso', '01/01/2020', 'Ca48');
+insert into VENDEDORES values ('V12', 'ExhaustPros', 3344556677889900123, 'sales@exhaustpros.net', 'Avenida Principal #123', 3002345678, 'Expertos en sistemas de escape', '02/02/2021', 'Ca14');
+insert into VENDEDORES values ('V13', 'SoundMasters', 4455667788990012345, 'contact@soundmasters.com', 'Carrera 45 #67-89', 3003456789, 'Especialistas en sistemas de audio', '03/03/2022', 'Ca20');
+insert into VENDEDORES values ('V14', 'BrakeExperts', 5566778899001234567, 'support@brakeexperts.com', 'Calle 89 #10-11', 3004567890, 'Frenos de alta calidad para autos deportivos', '04/04/2023', 'Ca2');
+insert into VENDEDORES values ('V15', 'TireKing', 6677889900123456789, 'info@tireking.com', 'Avenida del Norte #123', 3005678901, 'Distribuidores de neumáticos de alto rendimiento', '05/05/2024', 'Ca7');
+insert into VENDEDORES values ('V16', 'AutoLux', 7788990012345678901, 'contact@autolux.com', 'Carrera 8 #12-34', 3006789012, 'Lujos y accesorios para autos', '06/06/2025', 'Ca4');
+insert into VENDEDORES values ('V17', 'SpeedParts', 8899001234567890123, 'sales@speedparts.com', 'Calle 34 #56-78', 3007890123, 'Partes de alta velocidad y rendimiento', '07/07/2026', 'Ca3');
+insert into VENDEDORES values ('V18', 'EnginePros', 9900123456789012345, 'support@enginepros.com', 'Avenida Central #567', 3008901234, 'Componentes de motor de alto rendimiento', '08/08/2027', 'Ca3');
+insert into VENDEDORES values ('V19', 'BodyWorks', 1012345678901234567, 'info@bodyworks.com', 'Carrera 10 #23-45', 3009012345, 'Especialistas en carrocería y bodykits', '09/09/2028', 'Ca5');
+insert into VENDEDORES values ('V20', 'PerformanceParts', 1123456789012345678, 'contact@performanceparts.com', 'Calle 56 #78-90', 3010123456, 'Partes de alto rendimiento para competición', '10/10/2029', 'Ca30');
+insert into VENDEDORES values ('V21', 'TurboBoost', 1234567890123456789, 'sales@turboboost.com', 'Avenida del Sur #234', 3011234567, 'Sistemas de turbo y supercargadores', '11/11/2030', 'Ca3');
+insert into VENDEDORES values ('V22', 'AlloyWheels', 1345678901234567890, 'support@alloywheels.com', 'Carrera 12 #34-56', 3012345678, 'Rines de aleación ligera', '12/12/2031', 'Ca11');
+insert into VENDEDORES values ('V23', 'SuspensionExperts', 1456789012345678901, 'info@suspensionexperts.com', 'Calle 78 #90-12', 3013456789, 'Sistemas de suspensión avanzada', '13/01/2032', 'Ca1');
+insert into VENDEDORES values ('V24', 'CoolingSolutions', 1567890123456789012, 'contact@coolingsolutions.com', 'Avenida del Este #345', 3014567890, 'Soluciones de refrigeración para motores', '14/02/2033', 'Ca16');
+insert into VENDEDORES values ('V25', 'RadiatorMasters', 1678901234567890123, 'sales@radiatormasters.com', 'Carrera 14 #56-78', 3015678901, 'Radiadores y sistemas de enfriamiento', '15/03/2034', 'Ca17');
+insert into VENDEDORES values ('V26', 'LightingPros', 1789012345678901234, 'support@lightingpros.com', 'Calle 90 #12-34', 3016789012, 'Sistemas de iluminación para vehículos', '16/04/2035', 'Ca19');
+insert into VENDEDORES values ('V27', 'SoundSystem', 1890123456789012345, 'info@soundsystem.com', 'Avenida Central #567', 3017890123, 'Sistemas de sonido de alta calidad', '17/05/2036', 'Ca20');
+insert into VENDEDORES values ('V28', 'SecurityExperts', 1901234567890123456, 'contact@securityexperts.com', 'Carrera 16 #78-90', 3018901234, 'Sistemas de seguridad avanzada para vehículos', '18/06/2037', 'Ca21');
+insert into VENDEDORES values ('V29', 'NeumaticSolutions', 2012345678901234567, 'sales@neumaticsolutions.com', 'Calle 12 #34-56', 3019012345, 'Sistemas neumáticos para suspensión', '19/07/2038', 'Ca22');
+insert into VENDEDORES values ('V30', 'LubricantsPro', 2123456789012345678, 'support@lubricantspro.com', 'Avenida del Norte #678', 3020123456, 'Aceites y lubricantes de alta calidad', '20/08/2039', 'Ca24');
+insert into VENDEDORES values ('V31', 'FilterMasters', 2234567890123456789, 'info@filtermasters.com', 'Carrera 18 #90-12', 3021234567, 'Filtros de aire y aceite para vehículos', '21/09/2040', 'Ca25');
+insert into VENDEDORES values ('V32', 'PolishPros', 2345678901234567890, 'contact@polishpros.com', 'Calle 34 #56-78', 3022345678, 'Pulimentos y productos de limpieza', '22/10/2041', 'Ca26');
+insert into VENDEDORES values ('V33', 'RunflatTires', 2456789012345678901, 'sales@runflat.com', 'Avenida del Sur #345', 3023456789, 'Neumáticos runflat de alta seguridad', '23/11/2042', 'Ca27');
+insert into VENDEDORES values ('V34', 'WinterTires', 2567890123456789012, 'support@wintertires.com', 'Carrera 20 #12-34', 3024567890, 'Neumáticos de invierno para todo tipo de vehículo', '24/12/2043', 'Ca28');
+insert into VENDEDORES values ('V35', 'SummerTires', 2678901234567890123, 'info@summertires.com', 'Calle 56 #78-90', 3025678901, 'Neumáticos de verano de alto rendimiento', '25/01/2044', 'Ca29');
+insert into VENDEDORES values ('V36', 'CompetitionTires', 2789012345678901234, 'contact@competitiontires.com', 'Avenida Central #567', 3026789012, 'Neumáticos de competición', '26/02/2045', 'Ca30');
+insert into VENDEDORES values ('V37', '4x4Tires', 2890123456789012345, 'sales@4x4tires.com', 'Carrera 22 #34-56', 3027890123, 'Neumáticos para vehículos 4x4', '27/03/2046', 'Ca31');
+insert into VENDEDORES values ('V38', 'MotorcycleTires', 2901234567890123456, 'support@motorcycletires.com', 'Calle 78 #90-12', 3028901234, 'Neumáticos para motocicletas', '28/04/2047', 'Ca32');
+insert into VENDEDORES values ('V39', 'DragsterTires', 3012345678901234567, 'info@dragstertires.com', 'Avenida del Este #345', 3030123456, 'Neumáticos para dragsters', '29/05/2048', 'Ca33');
+insert into VENDEDORES values ('V40', 'QuadTires', 3123456789012345678, 'contact@quadtire.com', 'Carrera 24 #56-78', 3031234567, 'Neumáticos para quads', '30/06/2049', 'Ca34');
+insert into VENDEDORES values ('V41', 'KartTires', 3234567890123456789, 'sales@karttires.com', 'Calle 90 #12-34', 3032345678, 'Neumáticos para karts', '01/07/2050', 'Ca35');
+insert into VENDEDORES values ('V42', 'BoltsAndNuts', 3345678901234567890, 'support@boltsandnuts.com', 'Avenida del Norte #678', 3033456789, 'Tornillería de alta calidad', '02/08/2051', 'Ca36');
+insert into VENDEDORES values ('V43', 'NutMasters', 3456789012345678901, 'info@nutmasters.com', 'Carrera 26 #78-90', 3034567890, 'Tuercas de precisión', '03/09/2052', 'Ca37');
+insert into VENDEDORES values ('V44', 'WasherPros', 3567890123456789012, 'contact@washerpros.com', 'Calle 12 #34-56', 3035678901, 'Arandelas y espaciadores', '04/10/2053', 'Ca38');
+insert into VENDEDORES values ('V45', 'ScrewExperts', 3678901234567890123, 'sales@screwexperts.com', 'Avenida del Sur #345', 3036789012, 'Tornillos de alta resistencia', '05/11/2054', 'Ca39');
+insert into VENDEDORES values ('V46', 'BoltMasters', 3789012345678901234, 'support@boltmasters.com', 'Carrera 28 #90-12', 3037890123, 'Pernos y sujetadores', '06/12/2055', 'Ca40');
+insert into VENDEDORES values ('V47', 'RaceBolts', 3890123456789012345, 'info@racebolts.com', 'Calle 34 #56-78', 3038901234, 'Tornillería para competición', '07/01/2056', 'Ca41');
+insert into VENDEDORES values ('V48', 'AluminumBolts', 4012345678901234567, 'contact@aluminumbolts.com', 'Avenida Central #567', 3040123456, 'Tornillería de aluminio', '08/02/2057', 'Ca42');
+insert into VENDEDORES values ('V49', 'TitaniumBolts', 4123456789012345678, 'sales@titaniumbolts.com', 'Carrera 30 #12-34', 3041234567, 'Tornillería de titanio', '09/03/2058', 'Ca43');
+insert into VENDEDORES values ('V50', 'SteelBolts', 4234567890123456789, 'support@steelbolts.com', 'Calle 56 #78-90', 3042345678, 'Tornillería de acero inoxidable', '10/04/2059', 'Ca44');
+
+--COMPRAS
+insert into COMPRAS (identificador, descripcion, FechaCompras, PrecioTotal, vendedores_identificador ) values ('Co1', 'Suspension Vogtland Rg racing model', '14-04-2024', 200, 'V1');
+insert into COMPRAS  values ('Co2', 'Turbo Garrett Te', '14-04-2024', 300, 'V5');
+insert into COMPRAS  values ('Co3', 'Discos de frenos cer micos Brembo', '15-04-2024', 500, 'V3');
+insert into COMPRAS  values ('Co4', 'Capot en fibra de carbono forjada', '15-04-2024', 100, 'V2');
+insert into COMPRAS  values ('Co5', 'Radio con pantalla t ctil', '15-04-2024', 100, 'V4');
+insert into COMPRAS values ('Co6', 'Aceite 20W40', '28/05/2024', 100, 'V5');
+insert into COMPRAS values ('Co7', 'Filtro de aire K', '28/05/2024', 100, 'V5');
+insert into COMPRAS values ('Co8', 'Frenos de disco', '28/05/2024', 100, 'V5');
+insert into COMPRAS values ('Co9', 'Llantas de 4x4', '28/05/2024', 100, 'V6');
+insert into COMPRAS values ('Co10', 'Llantas de moto', '28/05/2024', 100, 'V6');
+insert into COMPRAS values ('Co11', 'Llantas de invierno', '28/05/2024', 100, 'V6');
+insert into COMPRAS values ('Co12', 'Llantas de verano', '28/05/2024', 100, 'V6');
+insert into COMPRAS values ('Co13', 'Tornilleria', '28/05/2024', 200, 'V7');
+insert into COMPRAS values ('Co14', 'Tornilleria de competici n', '28/05/2024', 200, 'V7');
+insert into COMPRAS values ('Co15', 'Tornilleria de aluminio', '28/05/2024', 200, 'V7');
+insert into COMPRAS values ('Co16', 'Tornilleria de titanio', '28/05/2024', 200, 'V7');
+insert into COMPRAS values ('Co17', 'Tornilleria de acero', '28/05/2024', 200, 'V7');
+insert into COMPRAS values ('Co18', 'Tornilleria de inoxidable', '28/05/2024', 200, 'V7');
+insert into COMPRAS values ('Co19', 'Tornilleria de lat n', '28/05/2024', 200, 'V7');
+insert into COMPRAS values ('Co20', 'Tornilleria de cobre', '28/05/2024', 200, 'V7');
+insert into COMPRAS values ('Co21', 'Oxido Nitroso', '28/05/2024', 200, 'V8');
+insert into COMPRAS values ('Co22', 'corte oxido nitroso', '28/05/2024', 500, 'V9');
+insert into COMPRAS values ('Co23', 'inyectores', '28/05/2024', 500, 'V11');
+insert into COMPRAS values ('Co24', 'inyectores rapidos', '28/05/2024', 500, 'V11');
+insert into COMPRAS values ('Co25', 'inyectores de competicion', '28/05/2024', 500, 'V11');
+insert into COMPRAS values ('Co26', 'Tuberia Borla', '28/05/2024', 300, 'V50');
+insert into COMPRAS values ('Co27', 'Tuberia de escape', '28/05/2024', 300, 'V12');
+insert into COMPRAS values ('Co28', 'Tuberia de escape de competicion', '28/05/2024', 300, 'V45');
+insert into COMPRAS values ('Co29', 'Tuberia de escape de titanio', '28/05/2024', 200, 'V46');
+insert into COMPRAS values ('Co30', 'Tuberia de escape de acero', '28/05/2024', 100, 'V14');
+insert into COMPRAS values ('Co31', 'Tuberia de escape de inoxidable', '28/05/2024', 100, 'V40');
+insert into COMPRAS values ('Co32', 'Blindaje ligero', '28/05/2024', 200, 'V15');
+insert into COMPRAS values ('Co33', 'Blindaje pesado', '28/05/2024', 200, 'V15');
+insert into COMPRAS values ('Co34', 'Blindaje de competicion', '28/05/2024', 200, 'V15');
+insert into COMPRAS values ('Co35', 'Blindaje fuerte', '28/05/2024', 200, 'V16');
+insert into COMPRAS values ('Co36', 'Suspension neumatica', '28/05/2024', 300, 'V17');
+insert into COMPRAS values ('Co37', 'Bombonas de aire', '28/05/2024', 200, 'V18');
+insert into COMPRAS values ('Co38', 'Suspension neumatica de competicion', '28/05/2024', 300, 'V23');
+insert into COMPRAS values ('Co39', 'Suspension 4*4', '28/05/2024', 200, 'V18');
+insert into COMPRAS values ('Co40', 'Suspension de competicion', '28/05/2024', 300, 'V24');
+insert into COMPRAS values ('Co41', 'Suspension de rally', '28/05/2024', 200, 'V25');
+insert into COMPRAS values ('Co42', 'Suspension de rally de competicion', '28/05/2024', 300, 'V30');
+insert into COMPRAS values ('Co43', 'Suspension rigida', '28/05/2024', 200, 'V33');
+insert into COMPRAS values ('Co44', 'Suspension rigida de competicion', '28/05/2024', 300, 'V34');
+insert into COMPRAS values ('Co45', 'Sistema Direccion', '28/05/2024', 200, 'V37');
+insert into COMPRAS values ('Co46', 'Sistema de direccion de competicion', '28/05/2024', 300, 'V19');
+insert into COMPRAS values ('Co47', 'Volante Bmw', '28/05/2024', 300, 'V20');
+insert into COMPRAS values ('Co48', 'Volante de competicion', '28/05/2024', 300, 'V20');
+insert into COMPRAS values ('Co49', 'Volante de rally', '28/05/2024', 300, 'V21');
+insert into COMPRAS values ('Co50', 'Volante de rally de competicion', '28/05/2024', 300, 'V22');
+
+
+--GARANTIAS
+insert into GARANTIAS (identificador, DescripcionMotivo) values ('G1', 'Daños en menos de un año o partes incompletas');
+insert into GARANTIAS values ('G2', 'Daños en menos de un año');
+insert into GARANTIAS values ('G3', Null);
+insert into GARANTIAS values ('G4', Null);
+insert into GARANTIAS values ('G5', 'Daños de Fabrica');
+insert into GARANTIAS values ('G6', 'Daños en el motor');
+insert into GARANTIAS values ('G7', 'Daños en la transmisión');
+insert into GARANTIAS values ('G8', 'Daños en el sistema de frenos');
+insert into GARANTIAS values ('G9', 'Daños en el sistema de escape');
+insert into GARANTIAS values ('G10', 'Daños en el sistema de dirección');
+insert into GARANTIAS values ('G11', 'Daños en la suspensión');
+insert into GARANTIAS values ('G12', 'Daños en el sistema eléctrico');
+insert into GARANTIAS values ('G13', 'Daños en los neumáticos');
+insert into GARANTIAS values ('G14', 'Daños en el parabrisas');
+insert into GARANTIAS values ('G15', 'Daños en las ventanas');
+insert into GARANTIAS values ('G16', 'Daños en el chasis');
+insert into GARANTIAS values ('G17', 'Daños en el sistema de climatización');
+insert into GARANTIAS values ('G18', 'Daños en el sistema de audio');
+insert into GARANTIAS values ('G19', 'Daños en los asientos');
+insert into GARANTIAS values ('G20', 'Daños en la carrocería');
+insert into GARANTIAS values ('G21', 'Daños en el techo');
+insert into GARANTIAS values ('G22', 'Daños en el capó');
+insert into GARANTIAS values ('G23', 'Daños en el maletero');
+insert into GARANTIAS values ('G24', 'Daños en las luces delanteras');
+insert into GARANTIAS values ('G25', 'Daños en las luces traseras');
+insert into GARANTIAS values ('G26', 'Daños en los espejos retrovisores');
+insert into GARANTIAS values ('G27', 'Daños en los airbags');
+insert into GARANTIAS values ('G28', 'Daños en la batería');
+insert into GARANTIAS values ('G29', 'Daños en el sistema de arranque');
+insert into GARANTIAS values ('G30', 'Daños en el radiador');
+insert into GARANTIAS values ('G31', 'Daños en el ventilador');
+insert into GARANTIAS values ('G32', 'Daños en el alternador');
+insert into GARANTIAS values ('G33', 'Daños en el sistema de combustible');
+insert into GARANTIAS values ('G34', 'Daños en la bomba de agua');
+insert into GARANTIAS values ('G35', 'Daños en el filtro de aire');
+insert into GARANTIAS values ('G36', 'Daños en el filtro de aceite');
+insert into GARANTIAS values ('G37', 'Daños en el embrague');
+insert into GARANTIAS values ('G38', 'Daños en la caja de cambios');
+insert into GARANTIAS values ('G39', 'Daños en el tubo de escape');
+insert into GARANTIAS values ('G40', 'Daños en el catalizador');
+insert into GARANTIAS values ('G41', 'Daños en la antena');
+insert into GARANTIAS values ('G42', 'Daños en la cerradura');
+insert into GARANTIAS values ('G43', 'Daños en la pintura');
+insert into GARANTIAS values ('G44', 'Daños en el interior');
+insert into GARANTIAS values ('G45', 'Daños en los limpiaparabrisas');
+insert into GARANTIAS values ('G46', 'Daños en el tablero de instrumentos');
+insert into GARANTIAS values ('G47', 'Daños en el sistema de navegación');
+insert into GARANTIAS values ('G48', 'Daños en los cinturones de seguridad');
+insert into GARANTIAS values ('G49', 'Daños en el sistema de suspensión neumática');
+insert into GARANTIAS values ('G50', 'Daños en el sistema de tracción');
+
+
+--PARTES
+
+insert into PARTES  values ('P1', 'Suspension Vogtland Rg racing model', 30, 'Suspension Vogtland de fabricante aleman importada directamente bajo pedido, alto rendimiento', 200, 300, 'Ca1', 'G1', 1);
+insert into PARTES  values('P2', 'Turbo Garrett Te', 10, 'Turbo Garrett Te, alto rendimiento 14 lb/psi', 300, 500, 'Ca3', 'G2', 3);
+insert into PARTES  values('P3', 'Discos de frenos cerámicos Brembo', 40, 'Discos de frenos cerámicos Brembo alto rendimiento', 500, 700, 'Ca2', 'G3', 2);
+insert into PARTES  values('P4', 'Capot en fibra de carbono forjada', 10, 'Capot en fibra de carbono forjada', 100, 700, 'Ca5', 'G4', 5);
+insert into PARTES  values('P5', 'Radio con pantalla táctil', 5, 'Radio con pantalla táctil con Carplay y AndroidCar', 100, 200, 'Ca2', 'G5', 1);
+insert into PARTES  values('P6', 'Aceite 20W40', 1, 'Aceite 20W40', 100, 200, 'Ca24', 'G6', 10);
+insert into PARTES  values('P7', 'Filtro de aire K', 1, 'Filtro de aire K', 100, 200, 'Ca25', 'G7', 10);
+insert into PARTES  values('P8', 'Frenos de disco', 1, 'Frenos de disco', 100, 200, 'Ca2', 'G8', 4);
+insert into PARTES  values('P9', 'Llantas de 4x4', 1, 'Llantas de 4x4', 100, 300, 'Ca31', 'G9', 10);
+insert into PARTES  values('P10', 'Llantas de moto', 1, 'Llantas de moto', 100, 200, 'Ca32', 'G10', 10);
+insert into PARTES  values('P11', 'Llantas de invierno', 1, 'Llantas de invierno', 100, 300, 'Ca11', 'G5', 10);
+insert into PARTES  values('P12', 'Llantas de verano', 1, 'Llantas de verano', 100, 200, 'Ca29', 'G12', 10);
+insert into PARTES  values('P13', 'Tornilleria', 1, 'Tornilleria', 200, 400, 'Ca36', 'G13', 10);
+insert into PARTES  values('P14', 'Tornilleria de competición', 1, 'Tornilleria de competición',200, 400, 'Ca41', 'G14', 10);
+insert into PARTES  values('P15', 'Tornilleria de aluminio', 1, 'Tornilleria de aluminio', 200, 400, 'Ca42', 'G15', 10);
+insert into PARTES  values('P16', 'Tornilleria de titanio', 1, 'Tornilleria de titanio', 200, 400, 'Ca43', 'G16', 10);
+insert into PARTES  values('P17', 'Tornilleria de acero', 1, 'Tornilleria de acero', 200, 400, 'Ca44', 'G17', 10);
+insert into PARTES  values('P18', 'Tornilleria de inoxidable', 1, 'Tornilleria de inoxidable', 200, 400, 'Ca45', 'G18', 10);
+insert into PARTES  values('P19', 'Tornilleria de latón', 1, 'Tornilleria de latón', 200, 400, 'Ca46', 'G19', 10);
+insert into PARTES  values('P20', 'Tornilleria de cobre', 1, 'Tornilleria de cobre', 200, 400, 'Ca47', 'G20', 10);
+insert into PARTES  values('P21', 'Oxido Nitroso', 5, 'Oxido Nitroso para autos de competición', 200, 300, 'Ca48', 'G21', 5);
+insert into PARTES  values('P22', 'Corte oxido nitroso', 5, 'Sistema de corte de oxido nitroso', 500, 700, 'Ca48', 'G22', 5);
+insert into PARTES  values('P23', 'Inyectores', 1, 'Inyectores de alto rendimiento', 500, 700, 'Ca49', 'G23', 10);
+insert into PARTES  values('P24', 'Inyectores rápidos', 1, 'Inyectores de respuesta rápida', 500, 800, 'Ca49', 'G24', 10);
+insert into PARTES  values('P25', 'Inyectores de competición', 1, 'Inyectores para autos de competición', 500, 800, 'Ca49', 'G25', 10);
+insert into PARTES  values('P26', 'Tubería Borla', 5, 'Tubería de escape Borla', 300, 500, 'Ca50', 'G26', 3);
+insert into PARTES  values('P27', 'Tubería de escape', 5, 'Tubería de escape estándar', 300, 500, 'Ca50', 'G27', 3);
+insert into PARTES  values('P28', 'Tubería de escape de competición', 5, 'Tubería de escape para competición', 300, 500, 'Ca50', 'G28', 3);
+insert into PARTES  values('P29', 'Tubería de escape de titanio', 5, 'Tubería de escape fabricada en titanio', 200, 500, 'Ca50', 'G29', 3);
+insert into PARTES  values('P30', 'Tubería de escape de acero', 5, 'Tubería de escape fabricada en acero', 100, 200, 'Ca50', 'G8', 3);
+insert into PARTES  values('P31', 'Tubería de escape de inoxidable', 5, 'Tubería de escape fabricada en acero inoxidable', 100, 500, 'Ca50', 'G30', 3);
+insert into PARTES  values('P32', 'Blindaje ligero', 20, 'Blindaje ligero para vehículos', 200, 400, 'Ca1', 'G33', 2);
+insert into PARTES  values('P33', 'Blindaje pesado', 50, 'Blindaje pesado para vehículos', 200, 400, 'Ca26', 'G34', 2);
+insert into PARTES  values('P34', 'Blindaje de competición', 30, 'Blindaje para vehículos de competición', 200, 400, 'Ca30', 'G35', 2);
+insert into PARTES  values('P35', 'Blindaje fuerte', 40, 'Blindaje con mayor resistencia', 200, 400, 'Ca25', 'G36', 2);
+insert into PARTES  values('P36', 'Suspensión neumática', 25, 'Suspensión neumática ajustable', 300, 500, 'Ca28', 'G37', 3);
+insert into PARTES  values('P37', 'Bombonas de aire', 10, 'Bombonas de aire comprimido para suspensiones', 200, 400, 'Ca42', 'G38', 5);
+insert into PARTES  values('P38', 'Suspensión neumática de competición', 25, 'Suspensión neumática ajustable para competición', 300, 500, 'Ca47', 'G40', 3);
+insert into PARTES  values('P39', 'Suspensión 4x4', 25, 'Suspensión especial para vehículos 4x4', 200, 400, 'Ca43', 'G41', 4);
+insert into PARTES  values('P40', 'Suspensión de competición', 25, 'Suspensión para vehículos de competición', 300, 500, 'Ca50', 'G45', 3);
+insert into PARTES  values('P41', 'Suspensión de rally', 25, 'Suspensión ajustable para rally', 200, 400, 'Ca5', 'G42', 4);
+insert into PARTES  values('P42', 'Suspensión de rally de competición', 25, 'Suspensión para rally de competición', 300, 500, 'Ca32', 'G44', 3);
+insert into PARTES  values('P43', 'Suspensión rígida', 25, 'Suspensión rígida de alto rendimiento', 200, 400, 'Ca38', 'G45', 4);
+insert into PARTES  values('P44', 'Suspensión rígida de competición', 25, 'Suspensión rígida para competición', 300, 500, 'Ca46', 'G46', 3);
+insert into PARTES  values('P45', 'Sistema de Dirección', 10, 'Sistema de dirección para vehículos', 200, 400, 'Ca50', 'G47', 5);
+insert into PARTES  values('P46', 'Sistema de dirección de competición', 10, 'Sistema de dirección para competición', 300, 500, 'Ca7', 'G48', 5);
+insert into PARTES  values('P47', 'Volante BMW', 5, 'Volante de alto rendimiento BMW', 300, 500, 'Ca38', 'G49', 2);
+insert into PARTES  values('P48', 'Volante de competición', 5, 'Volante para vehículos de competición', 300, 600, 'Ca8', 'G50', 2);
+insert into PARTES  values('P49', 'Volante de rally', 5, 'Volante especial para rally', 300, 500, 'Ca5', 'G40', 2);
+insert into PARTES  values('P50', 'Volante de rally de competición', 5, 'Volante para rally de competición', 300, 500, 'Ca9', 'G38', 2);
+
+
+
+--ITEMSCOMPRAS
+insert into ITEMSCOMPRAS (identificador, cantidad, precio, compras_identificador, partes_identificador) values ('IC1', 1, 200,'Co1', 'P1');
+insert into ITEMSCOMPRAS values('IC2', 1, 300, 'Co2', 'P2');
+insert into ITEMSCOMPRAS values('IC3', 1, 500, 'Co3', 'P3');
+insert into ITEMSCOMPRAS values('IC4', 1, 100, 'Co4', 'P4');
+insert into ITEMSCOMPRAS values('IC5', 1, 100, 'Co5', 'P5');
+insert into ITEMSCOMPRAS values('IC6', 1, 100, 'Co6', 'P6');
+insert into ITEMSCOMPRAS values('IC7', 1, 100, 'Co7', 'P7');
+insert into ITEMSCOMPRAS values('IC8', 1, 100, 'Co8', 'P8');
+insert into ITEMSCOMPRAS values('IC9', 1, 100, 'Co9', 'P9');
+insert into ITEMSCOMPRAS values('IC10', 1, 100, 'Co10', 'P10');
+insert into ITEMSCOMPRAS values('IC11', 1, 100, 'Co11', 'P11');
+insert into ITEMSCOMPRAS values('IC12', 1, 100, 'Co12', 'P12');
+insert into ITEMSCOMPRAS values('IC13', 1, 200, 'Co13', 'P13');
+insert into ITEMSCOMPRAS values('IC14', 1, 200, 'Co14', 'P14');
+INSERT INTO ITEMSCOMPRAS VALUES ('IC15', 1, 200, 'Co15', 'P15');
+INSERT INTO ITEMSCOMPRAS VALUES ('IC16', 1, 200, 'Co16', 'P16');
+insert into ITEMSCOMPRAS values('IC17', 1, 200, 'Co17', 'P17');
+insert into ITEMSCOMPRAS values('IC18', 1, 200, 'Co18', 'P18');
+insert into ITEMSCOMPRAS values('IC19', 1, 200, 'Co19', 'P19');
+insert into ITEMSCOMPRAS values('IC20', 1, 200, 'Co20', 'P20');
+insert into ITEMSCOMPRAS values('IC21', 1, 200, 'Co21', 'P21');
+insert into ITEMSCOMPRAS values('IC22', 1, 500, 'Co22', 'P22');
+insert into ITEMSCOMPRAS values('IC23', 1, 500, 'Co23', 'P23');
+insert into ITEMSCOMPRAS values('IC24', 1, 500, 'Co24', 'P24');
+insert into ITEMSCOMPRAS values('IC25', 1, 500, 'Co25', 'P25');
+insert into ITEMSCOMPRAS values('IC26', 1, 300, 'Co26', 'P26');
+insert into ITEMSCOMPRAS values('IC27', 1, 300, 'Co27', 'P27');
+insert into ITEMSCOMPRAS values('IC28', 1, 500, 'Co28', 'P28');
+insert into ITEMSCOMPRAS values('IC29', 1, 300, 'Co29', 'P29');
+insert into ITEMSCOMPRAS values('IC30', 1, 100, 'Co30', 'P30');
+insert into ITEMSCOMPRAS values('IC31', 1, 100, 'Co31', 'P31');
+insert into ITEMSCOMPRAS values('IC32', 1, 200, 'Co32', 'P32');
+insert into ITEMSCOMPRAS values('IC33', 1, 200, 'Co33', 'P33');
+insert into ITEMSCOMPRAS values('IC34', 1, 200, 'Co34', 'P34');
+insert into ITEMSCOMPRAS values('IC35', 1, 200, 'Co35', 'P35');
+insert into ITEMSCOMPRAS values('IC36', 1, 300, 'Co36', 'P36');
+insert into ITEMSCOMPRAS values('IC37', 1, 200, 'Co37', 'P37');
+insert into ITEMSCOMPRAS values('IC38', 1, 300, 'Co38', 'P38');
+insert into ITEMSCOMPRAS values('IC39', 1, 200, 'Co39', 'P39');
+insert into ITEMSCOMPRAS values('IC40', 1, 300, 'Co40', 'P40');
+insert into ITEMSCOMPRAS values('IC41', 1, 200, 'Co41', 'P41');
+insert into ITEMSCOMPRAS values('IC42', 1, 300, 'Co42', 'P42');
+insert into ITEMSCOMPRAS values('IC43', 1, 200, 'Co43', 'P43');
+insert into ITEMSCOMPRAS values('IC44', 1, 300, 'Co44', 'P44');
+insert into ITEMSCOMPRAS values('IC45', 1, 200, 'Co45', 'P45');
+insert into ITEMSCOMPRAS values('IC46', 1, 300, 'Co46', 'P46');
+insert into ITEMSCOMPRAS values('IC47', 1, 300, 'Co47', 'P47');
+insert into ITEMSCOMPRAS values('IC48', 1, 300, 'Co48', 'P48');
+insert into ITEMSCOMPRAS values('IC49', 1, 300, 'Co49', 'P49');
+insert into ITEMSCOMPRAS values('IC50', 1, 300, 'Co50', 'P50');
+
+
+--REPARACIONES
+insert into REPARACIONES (garantias_identificador, DescripcionDanoParte, DescripcionSolucion) values ('G1', 'La suspension no trajo sus soportes completos', 'La empresa envi  las partes faltantes');
+
+--REEMPLAZOS
+insert into REEMPLAZOS (garantias_identificador, DescripcionDanos, PiezasCambio) values ('G1', null, null);
+
+--COMPRADORES
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1076241500, 'Ivan Santiago F. Torres', 'Amante a los vehiculos deportivos y aprender cada dia mas', 'Vehiculos cuarto de milla y sleepers', 'CARRERA 2 # 5-20', 'ivan.forero-t@mail.escuelaing.edu.co', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1236540178, 'Andres Torres', 'Restauracion y modificaciones', 'correr y modificar', 'CARRERA#5-92','Andres.Torres@gmail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1452987410, 'Hector Torres', 'Competidor aficionado en el cuarto de milla', 'Competir a nivel nacional en el cuarto de milla', 'CARRERA 1c#5-92 ', 'Hector.T0rres@gmail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1239540320, 'Manuel Forero', 'Cuidado exterior e interior del vehiculo', 'Cuidar los vehiculos y partes alto performance', 'CARRERA 2#5-20', 'Manuel.Fo@gmail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (7892110634, 'Sebastian Silva', 'Competidor aficionado en el cuarto de milla', 'Competir a nivel nacional en el cuarto de milla', 'Transversal 23#14c-20 ', 'Sebastian.Silva@gmail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1478392546, 'Pedro Garcia', 'Coleccionista de autos de lujo', 'Automóviles de alta gama', 'AVENIDA 7 # 11-27', 'pedro.garcia@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1543289431, 'Diana Fernandez', 'Amante de los SUV y todoterrenos', 'Exploración y viajes largos', 'CARRERA 15 # 18-60', 'diana.fernandez@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1623491280, 'Jorge Ramirez', 'Aficionado a las motocicletas', 'Motocross y velocidad', 'CALLE 6 # 19-32', 'jorge.ramirez@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1712340987, 'Sofia Alvarez', 'Entusiasta de los coches híbridos', 'Tecnología híbrida y eficiencia', 'CARRERA 21 # 7-80', 'sofia.alvarez@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1812340978, 'Miguel Lopez', 'Apasionado por los muscle cars', 'Fuerza y rendimiento', 'CALLE 11 # 4-29', 'miguel.lopez@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1928340921, 'Laura Herrera', 'Fanática de los coches compactos', 'Eficiencia urbana', 'CARRERA 4 # 13-54', 'laura.herrera@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (2045678932, 'Alberto Mendoza', 'Entusiasta de las camionetas pick-up', 'Trabajo y aventura', 'AVENIDA 9 # 21-43', 'alberto.mendoza@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (2134567894, 'Claudia Ortega', 'Amante de los coches de lujo', 'Confort y exclusividad', 'CARRERA 8 # 24-56', 'claudia.ortega@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (2245678931, 'Fernando Rojas', 'Apasionado por los coches vintage', 'Coleccionismo y restauración', 'CALLE 15 # 5-72', 'fernando.rojas@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (2345678912, 'Marta Pineda', 'Entusiasta de los autos tuning', 'Personalización y diseño', 'CARRERA 10 # 2-30', 'marta.pineda@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (2456789012, 'Ricardo Reyes', 'Aficionado a los autos de carreras', 'Velocidad y rendimiento', 'CALLE 20 # 6-43', 'ricardo.reyes@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (2567890123, 'Patricia Salazar', 'Fanática de los coches ecológicos', 'Tecnología verde', 'AVENIDA 12 # 10-40', 'patricia.salazar@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (2678901234, 'Victor Morales', 'Entusiasta de los autos deportivos', 'Prestaciones altas y diseño', 'CARRERA 14 # 9-31', 'victor.morales@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (2789012345, 'Gloria Mejia', 'Amante de los autos familiares', 'Seguridad y espacio', 'CALLE 7 # 11-21', 'gloria.mejia@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (2890123456, 'Alejandro Castro', 'Aficionado a las motos deportivas', 'Velocidad y adrenalina', 'CARRERA 19 # 6-15', 'alejandro.castro@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (2901234567, 'Isabel Guzman', 'Fanática de los coches urbanos', 'Eficiencia y maniobrabilidad', 'CALLE 3 # 14-70', 'isabel.guzman@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (3012345678, 'Jose Villanueva', 'Entusiasta de las caravanas', 'Viajes y comodidad', 'AVENIDA 18 # 8-53', 'jose.villanueva@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (3123456789, 'Carmen Mendoza', 'Amante de los autos eléctricos', 'Innovación y sostenibilidad', 'CARRERA 16 # 4-34', 'carmen.mendoza@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (3234567890, 'Oscar Cardenas', 'Fanático de los vehículos pesados', 'Camiones y maquinaria', 'CALLE 10 # 7-52', 'oscar.cardenas@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (3345678901, 'Natalia Ruiz', 'Entusiasta de los coches descapotables', 'Estilo y libertad', 'AVENIDA 20 # 5-41', 'natalia.ruiz@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (3456789012, 'Luis Romero', 'Apasionado por los autos de lujo', 'Confort y prestaciones', 'CARRERA 17 # 6-25', 'luis.romero@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (3567890123, 'Sara Vargas', 'Amante de los coches híbridos', 'Eficiencia y tecnología', 'CALLE 13 # 3-48', 'sara.vargas@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (3678901234, 'Felipe Delgado', 'Fanático de los autos clásicos', 'Restauración y coleccionismo', 'AVENIDA 6 # 12-20', 'felipe.delgado@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (3789012345, 'Andrea Marin', 'Entusiasta de las motocicletas', 'Aventura y velocidad', 'CARRERA 18 # 11-29', 'andrea.marin@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (3890123456, 'Juan Estrada', 'Aficionado a los autos deportivos', 'Rendimiento y diseño', 'CALLE 9 # 14-63', 'juan.estrada@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (3901234567, 'Monica Leon', 'Amante de los SUV', 'Comodidad y versatilidad', 'CARRERA 22 # 8-15', 'monica.leon@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (4012345678, 'David Navarro', 'Entusiasta de los coches eléctricos', 'Tecnología y sostenibilidad', 'CALLE 5 # 7-19', 'david.navarro@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (4123456789, 'Paula Gutierrez', 'Fanática de los autos de lujo', 'Confort y exclusividad', 'AVENIDA 14 # 6-22', 'paula.gutierrez@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (4234567890, 'Carlos Mendoza', 'Amante de los coches tuning', 'Personalización y diseño', 'CARRERA 11 # 9-48', 'carlos.mendoza@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (4345678901, 'Valeria Torres', 'Apasionada por los coches deportivos', 'Prestaciones altas y diseño', 'CALLE 21 # 3-56', 'valeria.torres@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (4456789012, 'Diego Pacheco', 'Entusiasta de los vehículos de carga', 'Camiones y transporte', 'AVENIDA 13 # 10-31', 'diego.pacheco@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (4567890123, 'Tatiana Ramirez', 'Amante de los autos híbridos', 'Eficiencia y tecnología', 'CARRERA 23 # 4-17', 'tatiana.ramirez@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (4678901234, 'Pablo Suarez', 'Fanático de los coches antiguos', 'Coleccionismo y restauración', 'CALLE 12 # 9-20', 'pablo.suarez@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (4789012345, 'Gabriela Ortiz', 'Entusiasta de las motocicletas', 'Aventura y libertad', 'AVENIDA 5 # 8-29', 'gabriela.ortiz@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (4890123456, 'Rafael Castillo', 'Aficionado a los autos de carreras', 'Velocidad y rendimiento', 'CARRERA 9 # 13-44', 'rafael.castillo@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (4901234567, 'Mariana Vega', 'Amante de los coches urbanos', 'Eficiencia y maniobrabilidad', 'CALLE 19 # 7-25', 'mariana.vega@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (5012345678, 'Samuel Herrera', 'Entusiasta de los autos eléctricos', 'Innovación y sostenibilidad', 'CARRERA 24 # 11-20', 'samuel.herrera@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (5123456789, 'Liliana Gomez', 'Fanática de los coches familiares', 'Seguridad y espacio', 'CALLE 22 # 10-31', 'liliana.gomez@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (5234567890, 'Martin Silva', 'Apasionado por los coches descapotables', 'Estilo y libertad', 'AVENIDA 25 # 6-28', 'martin.silva@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (5345678901, 'Camila Naranjo', 'Entusiasta de los vehículos pesados', 'Camiones y maquinaria', 'CARRERA 13 # 5-23', 'camila.naranjo@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1089543210, 'Carlos Martinez', 'Apasionado por los autos clásicos', 'Restauración de autos antiguos', 'AVENIDA 3 # 10-45', 'carlos.martinez@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1167349210, 'Lucia Perez', 'Amante de los autos deportivos', 'Modificación de motores y carrocería', 'CALLE 4 # 16-30', 'lucia.perez@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1256789432, 'Mario Gomez', 'Fanático de los autos eléctricos', 'Tecnología y eficiencia energética', 'CARRERA 12 # 9-15', 'mario.gomez@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1357894521, 'Ana Ruiz', 'Entusiasta de las competiciones de rally', 'Autos de rally y off-road', 'CALLE 8 # 22-50', 'ana.ruiz@mail.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (5456789012, 'Raul Ramirez', 'Aficionado a los coches personalizados', 'Modificación y tuning', 'CALLE 8 # 14-23', 'raul.ramirez@mail.com', '14-04-2024');
+
+--VENTAS
+insert into VENTAS (identificador, descripcion, FechaVentas, CantidadPartes, compradores_identificador, PrecioTotal) values ('Ve1', 'Suspension Vogtland Rg racing model', '14-04-2024', 1, 1076241500, 300);
+insert into VENTAS values ('Ve2', 'Turbo Garrett Te', '14-04-2024', 2, 1236540178, 1000);
+insert into VENTAS values ('Ve3', 'Discos de frenos cer micos Brembo', '14-04-2024', 1, 1452987410, 700);
+insert into VENTAS values ('Ve4', 'Capot en fibra de carbono forjada', '14-04-2024', 3, 1239540320, 2100);
+insert into VENTAS values ('Ve5', 'Radio con pantalla t ctil', '14-04-2024', 1, 7892110634, 200);
+insert into VENTAS values ('Ve6', 'Aceite 20W40', '14-04-2024', 10, 2345678912, 2000);
+insert into VENTAS values ('Ve7', 'Filtro de aire K', '14-04-2024', 5, 3456789012, 1000);
+insert into VENTAS values ('Ve8', 'Frenos de disco', '14-04-2024', 2, 4567890123, 400);
+insert into VENTAS values ('Ve9', 'Llantas de 4x4', '14-04-2024', 4, 4678901234, 1200);
+insert into VENTAS values ('Ve10', 'Llantas de moto', '14-04-2024', 3, 4789012345, 600);
+insert into VENTAS values ('Ve11', 'Llantas de invierno', '14-04-2024', 6, 7892110634, 1800);
+insert into VENTAS values ('Ve12', 'Llantas de verano', '14-04-2024', 5, 3901234567, 1000);
+insert into VENTAS values ('Ve13', 'Tornilleria', '14-04-2024', 8, 4012345678, 3200);
+insert into VENTAS values ('Ve14', 'Tornilleria de competición', '14-04-2024', 7, 4123456789, 2800);
+insert into VENTAS values ('Ve15', 'Tornilleria de aluminio', '14-04-2024', 5, 4234567890, 2000);
+insert into VENTAS values ('Ve16', 'Tornilleria de titanio', '14-04-2024', 6, 4345678901, 2400);
+insert into VENTAS values ('Ve17', 'Tornilleria de acero', '14-04-2024', 7, 4456789012, 2800);
+insert into VENTAS values ('Ve18', 'Tornilleria de inoxidable', '14-04-2024', 5, 4567890123, 2000);
+insert into VENTAS values ('Ve19', 'Tornilleria de latón', '14-04-2024', 8, 4678901234, 3200);
+insert into VENTAS values ('Ve20', 'Tornilleria de cobre', '14-04-2024', 7, 4789012345, 2800);
+insert into VENTAS values ('Ve21', 'Oxido Nitroso', '14-04-2024', 4, 4890123456, 1200);
+insert into VENTAS values ('Ve22', 'Corte oxido nitroso', '14-04-2024', 3, 4901234567, 2100);
+insert into VENTAS values ('Ve23', 'Inyectores', '14-04-2024', 4, 5012345678, 2800);
+insert into VENTAS values ('Ve24', 'Inyectores rápidos', '14-04-2024', 5, 5123456789, 4000);
+insert into VENTAS values ('Ve25', 'Inyectores de competición', '14-04-2024', 6, 5234567890, 4800);
+insert into VENTAS values ('Ve26', 'Tubería Borla', '14-04-2024', 2, 5345678901, 1000);
+insert into VENTAS values ('Ve27', 'Tubería de escape', '14-04-2024', 3, 5456789012, 1500);
+insert into VENTAS values ('Ve28', 'Tubería de escape de competición', '14-04-2024', 4, 4567890123, 2000);
+insert into VENTAS values ('Ve29', 'Tubería de escape de titanio', '14-04-2024', 5, 4678901234, 2500);
+insert into VENTAS values ('Ve30', 'Tubería de escape de acero', '14-04-2024', 6, 4789012345, 1200);
+insert into VENTAS values ('Ve31', 'Tubería de escape de inoxidable', '14-04-2024', 3, 4890123456, 1500);
+insert into VENTAS values ('Ve32', 'Blindaje ligero', '14-04-2024', 2, 4901234567, 800);
+insert into VENTAS values ('Ve33', 'Blindaje pesado', '14-04-2024', 2, 5012345678, 800);
+insert into VENTAS values ('Ve34', 'Blindaje de competición', '14-04-2024', 2, 5123456789, 800);
+insert into VENTAS values ('Ve35', 'Blindaje fuerte', '14-04-2024', 2, 5234567890, 800);
+insert into VENTAS values ('Ve36', 'Suspensión neumática', '14-04-2024', 3, 5345678901, 1500);
+insert into VENTAS values ('Ve37', 'Bombonas de aire', '14-04-2024', 4, 5456789012, 1600);
+insert into VENTAS values ('Ve38', 'Suspensión neumática de competición', '14-04-2024', 3, 4567890123, 1500);
+insert into VENTAS values ('Ve39', 'Suspensión 4x4', '14-04-2024', 4, 4678901234, 1600);
+insert into VENTAS values ('Ve40', 'Suspensión de competición', '14-04-2024', 3, 4789012345, 1500);
+insert into VENTAS values ('Ve41', 'Suspensión de rally', '14-04-2024', 4, 4890123456, 1600);
+insert into VENTAS values ('Ve42', 'Suspensión de rally de competición', '14-04-2024', 3, 4901234567, 1500);
+insert into VENTAS values ('Ve43', 'Suspensión rígida', '14-04-2024', 4, 5012345678, 1600);
+insert into VENTAS values ('Ve44', 'Suspensión rígida de competición', '14-04-2024', 3, 5123456789, 1500);
+insert into VENTAS values ('Ve45', 'Sistema de Dirección', '14-04-2024', 5, 5234567890, 2000);
+insert into VENTAS values ('Ve46', 'Sistema de dirección de competición', '14-04-2024', 5, 5345678901, 2500);
+insert into VENTAS values ('Ve47', 'Volante BMW', '14-04-2024', 2, 5456789012, 1000);
+insert into VENTAS values ('Ve48', 'Volante de competición', '14-04-2024', 2, 4567890123, 1200);
+insert into VENTAS values ('Ve49', 'Volante de rally', '14-04-2024', 2, 4678901234, 1000);
+insert into VENTAS values ('Ve50', 'Volante de rally de competición', '14-04-2024', 2, 4789012345, 1000);
+
+--ITEMSVENTAS
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV1', 1, 200, 'P1', 'Ve1');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV2', 2, 200, 'P2', 'Ve2');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV3', 1, 200, 'P3', 'Ve3');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV4', 3, 200, 'P4', 'Ve4');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV5', 1, 200, 'P5', 'Ve5');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV6', 10, 200, 'P6', 'Ve6');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV7', 5, 200, 'P7', 'Ve7');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV8', 2, 200, 'P8', 'Ve8');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV9', 4, 200, 'P9', 'Ve9');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV10', 3, 200, 'P10', 'Ve10');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV11', 6, 200, 'P11', 'Ve11');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV12', 5, 200, 'P12', 'Ve12');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV13', 8, 200, 'P13', 'Ve13');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV14', 7, 200, 'P14', 'Ve14');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV15', 5, 200, 'P15', 'Ve15');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV16', 6, 200, 'P16', 'Ve16');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV17', 7, 200, 'P17', 'Ve17');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV18', 5, 200, 'P18', 'Ve18');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV19', 8, 200, 'P19', 'Ve19');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV20', 7, 200, 'P20', 'Ve20');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV21', 4, 200, 'P21', 'Ve21');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV22', 3, 200, 'P22', 'Ve22');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV23', 4, 200, 'P23', 'Ve23');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV24', 5, 200, 'P24', 'Ve24');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV25', 6, 200, 'P25', 'Ve25');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV26', 2, 200, 'P26', 'Ve26');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV27', 3, 200, 'P27', 'Ve27');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV28', 4, 200, 'P28', 'Ve28');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV29', 5, 200, 'P29', 'Ve29');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV30', 6, 200, 'P30', 'Ve30');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV31', 3, 200, 'P31', 'Ve31');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV32', 2, 200, 'P32', 'Ve32');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV33', 2, 200, 'P33', 'Ve33');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV34', 2, 200, 'P34', 'Ve34');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV35', 2, 200, 'P35', 'Ve35');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV36', 3, 200, 'P36', 'Ve36');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV37', 4, 200, 'P37', 'Ve37');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV38', 3, 200, 'P38', 'Ve38');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV39', 4, 200, 'P39', 'Ve39');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV40', 3, 200, 'P40', 'Ve40');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV41', 4, 200, 'P41', 'Ve41');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV42', 3, 200, 'P42', 'Ve42');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV44', 3, 200, 'P44', 'Ve44');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV45', 5, 200, 'P45', 'Ve45');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV46', 5, 200, 'P46', 'Ve46');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV47', 2, 200, 'P47', 'Ve47');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV48', 2, 200, 'P48', 'Ve48');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV49', 2, 200, 'P49', 'Ve49');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV50', 2, 200, 'P50', 'Ve50');
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV43', 4, 200, 'P43', 'Ve43');
+
+--VEHICULOS
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) values ('Porsche', 'GT3 Rs', 'Coup ', '4000', null, 'IST009', 1076241500 );
+insert into VEHICULOS values ('BMW', 'M2 cmp', 'Coup ', '3000', 'Bodykit csc', 'UYS478', 1236540178 );
+insert into VEHICULOS values ('Camaro', 'SS', 'Coup ', '6200', 'Capot en fibra de carbono y reprogramacion stg 2', 'PAR123', 1452987410 );
+insert into VEHICULOS values ('FORD', 'Raptor', 'pick-up', '3500', NULL, 'ART778', 1239540320 );
+insert into VEHICULOS values ('Suzuki', 'Hayabusa', 'SBK', '1310', NULL, 'STH47G', 7892110634 );
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Mercedes-Benz', 'S-Class', 'Sedan', '4000', NULL, 'MBZ400', 1478392546);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Jeep', 'Wrangler', 'SUV', '3600', 'Off-road modifications', 'JEP360', 1543289431);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Harley-Davidson', 'Sportster', 'Cruiser', '1200', 'Custom paint', 'HD1200', 1623491280);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Toyota', 'Prius', 'Hatchback', '1800', NULL, 'TP1800', 1712340987);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Dodge', 'Charger', 'Sedan', '6200', 'Supercharger', 'DC6200', 1812340978);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Fiat', '500', 'Hatchback', '1400', NULL, 'FT1400', 1928340921);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Chevrolet', 'Silverado', 'Pick-up', '5300', 'Lift kit', 'CS5300', 2045678932);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Rolls-Royce', 'Phantom', 'Sedan', '6700', NULL, 'RR6700', 2134567894);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Ford', 'Mustang', 'Convertible', '5000', 'Restored', 'FM5000', 2245678931);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Honda', 'Civic', 'Sedan', '2000', 'Custom tuning', 'HC2000', 2345678912);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Ferrari', '488 GTB', 'Coupé', '3900', 'Performance tuning', 'F488GT', 2456789012);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('BMW', 'X5', 'SUV', '3000', 'Sport package', 'BMW300', 1478392546);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Land Rover', 'Defender', 'SUV', '2200', 'Off-road tires', 'LR220', 1543289431);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Ducati', 'Monster', 'Naked', '1100', 'Custom exhaust', 'DM100', 1623491280);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Hyundai', 'Ioniq', 'Hatchback', '1600', 'Solar roof', 'HI160', 1712340987);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Chevrolet', 'Camaro', 'Coupé', '6200', 'Turbocharger', 'CC620', 1812340978);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Mini', 'Cooper', 'Hatchback', '2000', NULL, 'MC200', 1928340921);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Ford', 'F-150', 'Pick-up', '3500', 'Tonneau cover', 'FF350', 2045678932);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Lexus', 'LS', 'Sedan', '5000', 'Luxury package', 'LL000', 2134567894);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Volkswagen', 'Beetle', 'Convertible', '1600', 'Restored', 'VB100', 2245678931);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Subaru', 'Impreza', 'Sedan', '2000', 'Custom tuning', 'SIY200', 2345678912);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Porsche', '911', 'Coupé', '3000', 'Performance tuning', 'P911GT', 2456789012);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Audi', 'Q7', 'SUV', '3000', 'Sports package', 'AUDI07', 2789012345);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Harley-Davidson', 'Street 750', 'Cruiser', '750', 'Custom paint job', 'HD7500', 2890123456);
+
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Mercedes-Benz', 'S-Class', 'Sedan', '4000', 'AMG package', 'MB400', 3012345678);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Kawasaki', 'Ninja ZX-10R', 'Sport', '1000', 'Race kit', 'KAW100', 3123456789);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Jeep', 'Wrangler', 'SUV', '3600', 'Off-road package', 'JEEP36', 3234567890);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Chevrolet', 'Tahoe', 'SUV', '5300', 'Luxury trim', 'CT5300', 3345678901);
+
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Lamborghini', 'Aventador', 'Coupé', '6500', 'Performance exhaust', 'L65000', 3567890123);
+
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Mazda', 'MX-5', 'Convertible', '2000', 'Sport suspension', 'MX5200', 3789012345);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Volvo', 'XC90', 'SUV', '2500', 'Safety package', 'VXC250', 3890123456);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Alfa Romeo', 'Giulia', 'Sedan', '2900', 'Quadrifoglio package', 'ARG290', 3901234567);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Aston Martin', 'DB11', 'Coupé', '4000', 'Luxury package', 'AMDB11', 4012345678);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Mitsubishi', 'Lancer Evo X', 'Sedan', '2000', 'Performance tuning', 'MLEX20', 4123456789);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Jaguar', 'F-Type', 'Coupé', '3000', 'Sports exhaust', 'JFT300', 4234567890);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Honda', 'Civic', 'Sedan', '2000', 'Turbocharged', 'HC200', 4456789012);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Ford', 'Mustang', 'Coupé', '5000', 'Shelby GT350', 'FM500', 4567890123);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Subaru', 'WRX STI', 'Sedan', '2500', 'STI package', 'SWRX25', 4678901234);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Porsche', '911', 'Coupé', '3800', 'Turbo S', 'P911TS', 4789012345);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Nissan', 'GT-R', 'Coupé', '3800', 'NISMO edition', 'NGTR38', 4890123456);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Land Rover', 'Range Rover', 'SUV', '5000', 'Autobiography', 'LR500', 5012345678);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Bugatti', 'Chiron', 'Coupé', '8000', 'Hypercar', 'BC800', 5123456789);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Maserati', 'GranTurismo', 'Coupé', '4700', 'MC Stradale', 'MG470', 5234567890);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Bentley', 'Continental GT', 'Coupé', '6000', 'W12 engine', 'BGT600', 5345678901);
+
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) 
+values ('Lexus', 'RX', 'SUV', '3500', 'F Sport package', 'LX350', 5456789012);
+
+
+--PoblarNoOK
+
+--CATEGORIAS (2 categorias con un mismo identificador)
+--insert into CATEGORIAS (identificador, nombre, descripcion) values (5633901235, 'Motor', 'Partes internas y externas del motor');
+
+--VENDEDORES (2 vendedores con el mismo identificador)
+--insert into VENDEDORES (identificador, nombre, nit, correo, direccion, telefono, descripcion, FechaRegistro, categorias_identificador) values (11111111112222, 'AxleWorks', 88888888888888885248, 'support@service.org', 'Calle Sol #123', 999888777666555, 'empresa especializada en tecnolog a automotriz o componentes electr nicos', '18/10/2018', 8901234568);
+
+--COMPRAS (2 compras con el mismo identificador)
+--insert into COMPRAS (identificador, descripcion, FechaCompras, PrecioTotal, vendedores_identificador ) values (6321087541, 'Suspension neumatica castor', '14-04-2024', 200, 11111111112222);
+
+--PARTES (2 partes con el mismo identificador)
+--insert into PARTES (identificador, nombre, peso, descripcion, precio, categorias_identificador, garantias_identificador) values (1020154780, 'Capot en fibra de carbono reforzada', 15 , 'Capot en fibra de carbono reforzada con toma central y doble seguro r pido', 500, 5633901235, 2102103695);
+
+--COMPRADORES (2 usuarios con la misma direccion y correo)
+--insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (0000001005, 'Ivan Santiago F. Torres', null, 'Vehiculos cl sicos', 'CARRERA 2 # 5-20', 'ivan.forero-t@mail.escuelaing.edu.co', '14-04-2024');
+
+--VEHICULOS (2 vehiculos con la misma placa)
+--insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) values ('BMW', 'M2 competition', 'Coup ', '3000', 'Filtro de alto flujo y BodyKit', 'IST009', 1076241500 );
+
+
+--CONSULTAS
+SELECT * FROM PARTES
+WHERE partes.identificador = 'P3';
+
+SELECT * 
+FROM VEHICULOS JOIN COMPRADORES 
+ON VEHICULOS.compradores_identificador = COMPRADORES.identificador;
+
+SELECT * 
+FROM VEHICULOS 
+WHERE VEHICULOS.compradores_identificador = 1076241500;
+
+SELECT PARTES.NOMBRE 
+FROM PARTES 
+WHERE PARTES.STOCK = 2;
+
+SELECT COMPRADORES.NOMBRE, VENTAS.DESCRIPCION, VEHICULOS.MARCA, VEHICULOS.MODELO, VEHICULOS.CILINDRADA
+FROM COMPRADORES JOIN VENTAS 
+ON COMPRADORES.IDENTIFICADOR = 1236540178 AND VENTAS.compradores_identificador = 1236540178
+JOIN VEHICULOS ON COMPRADORES.IDENTIFICADOR = 1236540178 and VEHICULOS.compradores_identificador = 1236540178;
+
+
+--Tuplas;
+ALTER TABLE PARTES ADD CONSTRAINT CHECK_PrecioCompra_PrecioVenta CHECK (PrecioCompra < PrecioVenta);
+
+--TuplasOK
+insert into PARTES values ('P6', 'Rinez Oz Ultraleggera HLT', 15, 'Rinez Oz Ultraleggera HLT Porsche 987', 300, 400, 'Ca4', 'G5', 1);
+
+--TuplasNoOk
+--insert into PARTES values ('P7', 'Mitsubishi Enkei OZ', 12, 'Mitsubishi Enkei OZ Lancer Rally Evo III', 400, 300, 'Ca4', 'G5', 1);
+
+
+--Disparadores
+---IDENTIFICADORES
+CREATE OR REPLACE TRIGGER CATEGORIAS_IDENTIFICADOR_BI
+  BEFORE INSERT ON categorias
+  FOR EACH ROW
+DECLARE
+  next_id VARCHAR2(10);
+BEGIN
+  SELECT 'Ca' || TO_CHAR(COUNT(*) + 1, 'FM0') INTO next_id
+    FROM categorias;
+  :NEW.identificador := next_id;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER VENDEDORES_IDENTIFICADOR_BI
+  BEFORE INSERT ON VENDEDORES
+  FOR EACH ROW
+DECLARE
+  next_id VARCHAR2(10);
+BEGIN
+  SELECT 'V' || TO_CHAR(COUNT(*) + 1, 'FM0') INTO next_id
+    FROM VENDEDORES;
+  :NEW.identificador := next_id;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER COMPRAS_IDENTIFICADOR_BI
+  BEFORE INSERT ON COMPRAS
+  FOR EACH ROW
+DECLARE
+  next_id VARCHAR2(10);
+BEGIN
+  SELECT 'Co' || TO_CHAR(COUNT(*) + 1, 'FM0') INTO next_id
+    FROM COMPRAS;
+  :NEW.identificador := next_id;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER GARANTIAS_IDENTIFICADOR_BI
+  BEFORE INSERT ON GARANTIAS
+  FOR EACH ROW
+DECLARE
+  next_id VARCHAR2(10);
+BEGIN
+  SELECT 'G' || TO_CHAR(COUNT(*) + 1, 'FM0') INTO next_id
+    FROM COMPRAS;
+  :NEW.identificador := next_id;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER PARTES_IDENTIFICADOR_BI
+  BEFORE INSERT ON PARTES
+  FOR EACH ROW
+DECLARE
+  next_id VARCHAR2(10);
+BEGIN
+  SELECT 'P' || TO_CHAR(COUNT(*) + 1, 'FM0') INTO next_id
+    FROM PARTES;
+  :NEW.identificador := next_id;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ITEMSCOMPRAS_IDENTIFICADOR_BI
+  BEFORE INSERT ON ITEMSCOMPRAS
+  FOR EACH ROW
+DECLARE
+  next_id VARCHAR2(10);
+BEGIN
+  SELECT 'Ic' || TO_CHAR(COUNT(*) + 1, 'FM0') INTO next_id
+    FROM ITEMSCOMPRAS;
+  :NEW.identificador := next_id;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER VENTAS_IDENTIFICADOR_BI
+  BEFORE INSERT ON VENTAS
+  FOR EACH ROW
+DECLARE
+  next_id VARCHAR2(10);
+BEGIN
+  SELECT 'Ve' || TO_CHAR(COUNT(*) + 1, 'FM0') INTO next_id
+    FROM VENTAS;
+  :NEW.identificador := next_id;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ITEMSVENTAS_IDENTIFICADOR_BI
+  BEFORE INSERT ON ITEMSVENTAS
+  FOR EACH ROW
+DECLARE
+  next_id VARCHAR2(10);
+BEGIN
+  SELECT 'Iv' || TO_CHAR(COUNT(*) + 1, 'FM0') INTO next_id
+    FROM ITEMSVENTAS;
+  :NEW.identificador := next_id;
+END;
+/
+
+
+---FECHAS
+CREATE OR REPLACE TRIGGER VENDEDORES_FECHAREGISTRO_BI
+BEFORE INSERT ON VENDEDORES
+FOR EACH ROW
+BEGIN
+  :NEW.FechaDeRegistro := SYSDATE;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER COMPRAS_FECHACOMPRAS_BI
+BEFORE INSERT ON COMPRAS
+FOR EACH ROW
+BEGIN
+  :NEW.FechaCompras := SYSDATE;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER COMPRADORES_FECHAREGISTRO_BI
+BEFORE INSERT ON COMPRADORES
+FOR EACH ROW
+BEGIN
+  :NEW.FechaDeRegistro := SYSDATE;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER VENTAS_FECHAVENTAS_BI
+BEFORE INSERT ON VENTAS
+FOR EACH ROW
+BEGIN
+  :NEW.FechaVentas := SYSDATE;
+END;
+/
+
+--ACTUALIZAR PRIMERA FK
+CREATE OR REPLACE TRIGGER ACTUALIZAR_CATEGORIASVENDEDORES_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON CATEGORIAS
+FOR EACH ROW
+BEGIN
+  UPDATE VENDEDORES
+  SET CATEGORIAS_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE CATEGORIAS_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_CATEGORIASPARTES_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON CATEGORIAS
+FOR EACH ROW
+BEGIN
+  UPDATE PARTES
+  SET CATEGORIAS_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE CATEGORIAS_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_VENDEDORESCOMPRAS_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON VENDEDORES
+FOR EACH ROW
+BEGIN
+  UPDATE COMPRAS
+  SET VENDEDORES_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE VENDEDORES_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_ITEMSCOMPRASCOMPRAS_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON COMPRAS
+FOR EACH ROW
+BEGIN
+  UPDATE ITEMSCOMPRAS
+  SET COMPRAS_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE COMPRAS_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_ITEMSCOMPRASPARTES_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON PARTES
+FOR EACH ROW
+BEGIN
+  UPDATE ITEMSCOMPRAS
+  SET PARTES_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE PARTES_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_PARTESGARANTIAS_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON GARANTIAS
+FOR EACH ROW
+BEGIN
+  UPDATE PARTES
+  SET GARANTIAS_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE GARANTIAS_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_REPARACIONESGARANTIAS_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON GARANTIAS
+FOR EACH ROW
+BEGIN
+  UPDATE REPARACIONES
+  SET GARANTIAS_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE GARANTIAS_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_REEMPLAZOSGARANTIAS_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON GARANTIAS
+FOR EACH ROW
+BEGIN
+  UPDATE REEMPLAZOS
+  SET GARANTIAS_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE GARANTIAS_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_ITEMSVENTASPARTES_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON PARTES
+FOR EACH ROW
+BEGIN
+  UPDATE ITEMSVENTAS
+  SET PARTES_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE PARTES_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_VENTASITEMSVENTAS_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON VENTAS
+FOR EACH ROW
+BEGIN
+  UPDATE ITEMSVENTAS
+  SET VENTAS_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE VENTAS_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_VENTASCOMPRADORES_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON COMPRADORES
+FOR EACH ROW
+BEGIN
+  UPDATE VENTAS
+  SET COMPRADORES_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE COMPRADORES_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER ACTUALIZAR_VEHICULOSCOMPRADORES_IDENTIFICADOR_AU
+AFTER UPDATE OF IDENTIFICADOR ON COMPRADORES
+FOR EACH ROW
+BEGIN
+  UPDATE VEHICULOS
+  SET COMPRADORES_IDENTIFICADOR = :NEW.IDENTIFICADOR
+  WHERE COMPRADORES_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE verificar_referencial(
+  categoria_identificador VARCHAR2,
+  cantidad_vendedores INT
+)
+IS
+BEGIN
+  IF cantidad_vendedores > 0 THEN
+    RAISE_APPLICATION_ERROR(-20001, 'No se puede eliminar la categor a porque hay registros relacionados en la tabla VENDEDORES.');
+  END IF;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER BORRAR_CATEGORIAVENDEDORES_BD
+BEFORE DELETE ON CATEGORIAS
+FOR EACH ROW
+DECLARE
+  count_vendedores INT;
+BEGIN
+  SELECT COUNT(*) INTO count_vendedores FROM VENDEDORES WHERE CATEGORIAS_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+  verificar_referencial(:OLD.IDENTIFICADOR, count_vendedores);
+END;
+/
+CREATE OR REPLACE TRIGGER NOTDELETE_PARTESITEMSCOMPRAS_BD
+BEFORE DELETE ON PARTES
+FOR EACH ROW
+DECLARE
+  count_items INT;
+BEGIN
+  SELECT COUNT(*) INTO count_items FROM ITEMSCOMPRAS WHERE PARTES_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+  IF count_items > 0 THEN
+    RAISE_APPLICATION_ERROR(-20001, 'No se puede eliminar porque hay registros relacionados en la tabla ITEMSCOMPRAS.');
+  END IF;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER NOTDELETE_CATEGORIASPARTES_BD
+BEFORE DELETE ON CATEGORIAS
+FOR EACH ROW
+DECLARE
+  count_partes INT;
+BEGIN
+  SELECT COUNT(*) INTO count_partes FROM PARTES WHERE CATEGORIAS_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+  IF count_partes > 0 THEN
+    RAISE_APPLICATION_ERROR(-20001, 'No se puede eliminar porque hay registros relacionados en la tabla PARTES.');
+  END IF;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER NOTDELETE_GARANTIASPARTES_BD
+BEFORE DELETE ON GARANTIAS
+FOR EACH ROW
+DECLARE
+  count_partes INT;
+BEGIN
+  SELECT COUNT(*) INTO count_partes FROM PARTES WHERE GARANTIAS_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+  IF count_partes > 0 THEN
+    RAISE_APPLICATION_ERROR(-20001, 'No se puede eliminar porque hay registros relacionados en la tabla PARTES.');
+  END IF;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER NOTDELETE_PARTESITEMSVENTAS_BD
+BEFORE DELETE ON PARTES
+FOR EACH ROW
+DECLARE
+  count_items INT;
+BEGIN
+  SELECT COUNT(*) INTO count_items FROM ITEMSVENTAS WHERE PARTES_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+  IF count_items > 0 THEN
+    RAISE_APPLICATION_ERROR(-20001, 'No se puede eliminar porque hay registros relacionados en la tabla ITEMSVENTAS.');
+  END IF;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER NOTDELETE_COMPRADORESVENTAS_BD
+BEFORE DELETE ON COMPRADORES
+FOR EACH ROW
+DECLARE
+  count_ventas INT;
+BEGIN
+  SELECT COUNT(*) INTO count_ventas FROM VENTAS WHERE COMPRADORES_IDENTIFICADOR = :OLD.IDENTIFICADOR;
+  IF count_ventas > 0 THEN
+    RAISE_APPLICATION_ERROR(-20001, 'No se puede eliminar porque hay registros relacionados en la tabla VENTAS.');
+  END IF;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER INCREMENTAR_STOCKCOMPRAS_AI
+AFTER INSERT ON ITEMSCOMPRAS
+FOR EACH ROW
+BEGIN
+  UPDATE PARTES
+  SET stock = stock + :NEW.cantidad
+  WHERE IDENTIFICADOR = :NEW.PARTES_IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER DECREMENTO_STOCKVENTAS_AI
+AFTER INSERT ON ITEMSVENTAS
+FOR EACH ROW
+BEGIN
+  UPDATE PARTES
+  SET stock = stock - :NEW.cantidad
+  WHERE IDENTIFICADOR = :NEW.PARTES_IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER PRECIOTOTAL_ITEMSCOMPRASCOMPRAS_AI
+AFTER INSERT ON ITEMSCOMPRAS
+FOR EACH ROW
+BEGIN
+  UPDATE COMPRAS
+  SET PRECIOTOTAL = PRECIOTOTAL + (:NEW.cantidad * :NEW.precio)
+  WHERE IDENTIFICADOR = :NEW.COMPRAS_IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER PRECIOTOTAL_ITEMSVENTASVENTAS_AI
+AFTER INSERT ON ITEMSVENTAS
+FOR EACH ROW
+BEGIN
+  UPDATE VENTAS
+  SET PRECIOTOTAL = NVL(PRECIOTOTAL, 0) + (:NEW.cantidad * :NEW.precio)
+  WHERE IDENTIFICADOR = :NEW.VENTAS_IDENTIFICADOR;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER PARTESTOTAL_ITEMSVENTASVENTAS_AI
+AFTER INSERT ON ITEMSVENTAS
+FOR EACH ROW
+BEGIN
+  UPDATE VENTAS
+  SET CANTIDADPARTES = CANTIDADPARTES + :NEW.cantidad
+  WHERE IDENTIFICADOR = :NEW.VENTAS_IDENTIFICADOR;
+END;
+/
+
+
+--TriggersOK
+-- CATEGORIAS_IDENTIFICADOR_BI
+insert into CATEGORIAS (nombre, descripcion) values ('Escape', 'Salida de gases del veh culo');
+insert into CATEGORIAS  
+--VENDEDORES_FECHAREGISTRO_BI
+--VENDEDORES_IDENTIFICADOR_BI
+insert into VENDEDORES (nombre, nit, correo, direccion, telefono, descripcion, categorias_identificador) values ('VissionAndDessing', 41023333336338, 'visionDess@example.com', 'Avenida 22 # 6 - 36', 102368741066545392, 'Modificacion general de vehiculos', 'Ca5');
+--GARANTIAS_IDENTIFICADOR_BI
+insert into GARANTIAS (DescripcionMotivo) values ( 'Da os en la soldadura de las uniones');
+
+--EN LOS SIGUIENTES DATOS INSERTADOS SE PRUEBAN MAS DE UN DISPARADIOR A LA VEZ COMO LO SON:
+--COMPRAS_IDENTIFICADOR_BI;
+--COMPRAS_FECHACOMPRAS_BI
+
+--PARTES_IDENTIFICADOR_BI;
+
+--ITEMSCOMPRAS_IDENTIFICADOR_BI;
+--ITEMSVENTAS_IDENTIFICADOR_BI;
+
+--VENTAS_IDENTIFICADOR_BI;
+--VENTAS_FECHAVENTAS_BI
+
+
+--INCREMENTAR_STOCKCOMPRAS_AI;
+--DECREMENTO_STOCKVENTAS_AI;
+--PRECIOTOTAL_ITEMSCOMPRASCOMPRAS_AI;
+--PRECIOTOTAL_ITEMSVENTASVENTAS_AI;
+--PARTESTOTAL_ITEMSVENTASVENTAS_AI;
+
+--COMPRADORES_FECHAREGISTRO_BI
+
+--GARANTIAS_IDENTIFICADOR_BI
+
+insert into COMPRAS (descripcion, PrecioTotal, vendedores_identificador ) values ('Michelin Pilot Sport Cup 2', 500, 'V1');
+insert into PARTES (nombre, peso, descripcion, PrecioCompra,PrecioVenta, categorias_identificador, garantias_identificador, stock) values ( 'Michelin Pilot Sport Cup 2', 20, 'Llantas recomendadas para pista, larga duraci n, poco desgaste', 500, 700, 'Ca5', 'G5', 2);
+insert into ITEMSCOMPRAS (cantidad, precio, compras_identificador, partes_identificador) values ( 1, 500,'Co6', 'P7');
+insert into VENTAS (descripcion, CantidadPartes, compradores_identificador) values ('Michelin Pilot Sport Cup 2',2, 7892110634);
+insert into ITEMSVENTAS (cantidad, precio, partes_identificador, ventas_identificador) Values (2, 700, 'P7', 'Ve6');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo) values (1452639547, 'Felipe Rubio', 'Resto moods', 'Restaurador profesional', 'Transversal 24#14c-20 ', 'FelRUR@gmail.com');
+insert into GARANTIAS (DescripcionMotivo) values ('Da o total');
+
+--ACTUALIZAR_CATEGORIASVENDEDORES_IDENTIFICADOR_AU y ACTUALIZAR_CATEGORIASPARTES_IDENTIFICADOR_AU
+SELECT * FROM CATEGORIAS;
+SELECT * FROM VENDEDORES;
+SELECT * FROM PARTES; 
+UPDATE CATEGORIAS SET IDENTIFICADOR = 'Ca0' WHERE IDENTIFICADOR = 'Ca5';
+SELECT * FROM VENDEDORES;
+SELECT * FROM PARTES; 
+
+-- ACTUALIZAR_VENDEDORESCOMPRAS_IDENTIFICADOR_AU;
+SELECT * FROM VENDEDORES;
+SELECT * FROM COMPRAS;
+UPDATE VENDEDORES SET IDENTIFICADOR = 'V0' WHERE IDENTIFICADOR = 'V2';
+SELECT * FROM VENDEDORES;
+SELECT * FROM COMPRAS;
+
+
+--ACTUALIZAR_ITEMSCOMPRASCOMPRAS_IDENTIFICADOR_AU ACTUALIZAR_ITEMSCOMPRASPARTES_IDENTIFICADOR_AU
+SELECT * FROM ITEMSCOMPRAS;
+SELECT * FROM COMPRAS;
+UPDATE COMPRAS SET IDENTIFICADOR = 'Co0' WHERE IDENTIFICADOR = 'Co1';
+SELECT * FROM ITEMSCOMPRAS;
+SELECT * FROM COMPRAS;
+
+
+--ACTUALIZAR_ITEMSCOMPRASPARTES_IDENTIFICADOR_AU ACTUALIZAR_PARTESGARANTIAS_IDENTIFICADOR_AU;
+SELECT * FROM ITEMSCOMPRAS;
+SELECT * FROM PARTES;
+UPDATE PARTES SET IDENTIFICADOR = 'P0' WHERE IDENTIFICADOR = 'P2';
+SELECT * FROM ITEMSCOMPRAS;
+SELECT * FROM PARTES;
+
+--ACTUALIZAR_PARTESGARANTIAS_IDENTIFICADOR_AU;
+SELECT * FROM PARTES;
+SELECT * FROM GARANTIAS;
+UPDATE GARANTIAS SET IDENTIFICADOR = 'G0' WHERE IDENTIFICADOR = 'G1';
+SELECT * FROM PARTES;
+SELECT * FROM GARANTIAS;
+
+--ACTUALIZAR_REPARACIONESGARANTIAS_IDENTIFICADOR_AU;
+SELECT * FROM GARANTIAS;
+SELECT * FROM REPARACIONES;
+UPDATE GARANTIAS SET IDENTIFICADOR = 'G1' WHERE IDENTIFICADOR = 'G0';
+SELECT * FROM GARANTIAS;
+SELECT * FROM REPARACIONES;
+
+
+--ACTUALIZAR_REEMPLAZOSGARANTIAS_IDENTIFICADOR_AU;
+SELECT * FROM GARANTIAS;
+SELECT * FROM REEMPLAZOS;
+UPDATE GARANTIAS SET IDENTIFICADOR = 'G0' WHERE IDENTIFICADOR = 'G1';
+SELECT * FROM GARANTIAS;
+SELECT * FROM REEMPLAZOS;
+
+
+--ACTUALIZAR_ITEMSVENTASPARTES_IDENTIFICADOR_AU;
+SELECT * FROM ITEMSVENTAS;
+SELECT * FROM PARTES;
+UPDATE PARTES SET IDENTIFICADOR = 'P0' WHERE IDENTIFICADOR = 'P2';
+SELECT * FROM ITEMSVENTAS;
+SELECT * FROM PARTES;
+
+
+--ACTUALIZAR_VENTASITEMSVENTAS_IDENTIFICADOR_AU
+SELECT * FROM VENTAS;
+SELECT * FROM ITEMSVENTAS;
+UPDATE VENTAS SET IDENTIFICADOR = 'Ve0' WHERE IDENTIFICADOR = 'Ve1';
+SELECT * FROM VENTAS;
+SELECT * FROM ITEMSVENTAS;
+
+
+--ACTUALIZAR_VENTASCOMPRADORES_IDENTIFICADOR_AU Y ACTUALIZAR_VEHICULOSCOMPRADORES_IDENTIFICADOR_AU;
+SELECT * FROM VENTAS;
+SELECT * FROM COMPRADORES;
+SELECT * FROM VEHICULOS;
+UPDATE COMPRADORES SET IDENTIFICADOR = 0000000000 WHERE IDENTIFICADOR = 1076241500;
+SELECT * FROM VENTAS;
+SELECT * FROM COMPRADORES;
+SELECT * FROM VEHICULOS;
+
+--Pendiente a revisar
+--BORRAR_CATEGORIAVENDEDORES_BD, NOTDELETE_CATEGORIASPARTES_BD, NOTDELETE_PARTESITEMSVENTAS_BD, NOTDELETE_PARTESITEMSCOMPRAS_BD
+-- Seleccionar todos los registros de las tablas para inspeccionar los datos
+SELECT * FROM CATEGORIAS;
+SELECT * FROM VENDEDORES;
+SELECT * FROM PARTES;
+SELECT * FROM ITEMSVENTAS;
+SELECT * FROM ITEMSCOMPRAS;
+
+-- Eliminar registros de ITEMSVENTAS relacionados con PARTES 'P3' y 'P5'
+DELETE FROM ITEMSVENTAS WHERE IDENTIFICADOR IN ('IV3', 'IV5');
+
+-- Eliminar registros de ITEMSCOMPRAS relacionados con PARTES 'P3' y 'P5'
+DELETE FROM ITEMSCOMPRAS WHERE IDENTIFICADOR IN ('IC3', 'IC5');
+
+-- Eliminar registros de PARTES 'P3' y 'P5' despu s de eliminar los registros relacionados en ITEMSVENTAS e ITEMSCOMPRAS
+DELETE FROM PARTES WHERE IDENTIFICADOR IN ('P3', 'P5');
+
+-- Eliminar registros de VENDEDORES 'V3' despu s de eliminar los registros relacionados en CATEGORIAS 'Ca2'
+DELETE FROM VENDEDORES WHERE IDENTIFICADOR = 'V3';
+
+-- Eliminar registros de CATEGORIAS 'Ca2' despu s de todas las eliminaciones relacionadas
+DELETE FROM CATEGORIAS WHERE IDENTIFICADOR = 'Ca2';
+
+
+--TriggersNoOk
+--insert into CATEGORIAS (identificador, nombre, descripcion) values ('vidrios', 'Sistema seguridad del veh culo');
+--insert into VENDEDORES (identificador, nombre, nit, correo, direccion, telefono, descripcion, FechaDeRegistro, categorias_identificador) values ('WorkProshops', 41024123006338, 'Workspros@example.com', 'CARRERA 62 # 8 - 95', 1452036999541025630, 'Limpieza de vehiculos', '09/09/2018', 'Ca5');
+--insert into GARANTIAS (DescripcionMotivo) values ();
+--insert into COMPRAS (descripcion, FechaCompras, PrecioTotal, vendedores_identificador ) values ('Diablo rosso IV', '14-05-2024', 500);
+--insert into PARTES (identificador, nombre, peso, descripcion, PrecioCompra,PrecioVenta, categorias_identificador, garantias_identificador, stock) values ( 'Diablo rosso IV', 20, 'Llantas recomendadas para pista, larga duraci n, poco desgaste', 500, 700, 'Ca5', 'G5', 1);
+
+
+--VISTAS
+CREATE OR REPLACE VIEW CONSULTAR_COMPRAS AS
+SELECT COMPRAS.IDENTIFICADOR AS "IDENTIFICADOR DE COMPRA", 
+VENDEDORES.NOMBRE AS "NOMBRE DEL VENDEDOR", 
+COMPRAS.FECHACOMPRAS AS "FECHA DE COMPRA", 
+PARTES.NOMBRE AS "NOMBRE DE LA PARTE", 
+COMPRAS.PRECIOTOTAL AS "PRECIO TOTAL"
+FROM COMPRAS 
+JOIN VENDEDORES ON VENDEDORES.IDENTIFICADOR = COMPRAS.VENDEDORES_IDENTIFICADOR
+LEFT JOIN ITEMSCOMPRAS ON COMPRAS.IDENTIFICADOR = ITEMSCOMPRAS.COMPRAS_IDENTIFICADOR 
+JOIN PARTES ON ITEMSCOMPRAS.PARTES_IDENTIFICADOR = PARTES.IDENTIFICADOR 
+WHERE VENDEDORES.IDENTIFICADOR = 'V5';
+
+
+CREATE OR REPLACE VIEW CONSULTAR_PARTES AS
+SELECT CATEGORIAS.NOMBRE AS "NOMBRE DE LA CATEGORIA",
+PARTES.NOMBRE AS "NOMBRE DE LA PARTE",
+PARTES.DESCRIPCION AS "DESCRIPCION DE LA PARTE",
+PARTES.PRECIOVENTA AS "PRECIO DE VENTA",
+PARTES.STOCK AS "STOCK EN TIENDA"
+FROM PARTES 
+JOIN CATEGORIAS ON PARTES.CATEGORIAS_IDENTIFICADOR = CATEGORIAS.IDENTIFICADOR
+WHERE PARTES.NOMBRE = 'Rinez Oz Ultraleggera HLT';
+
+
+CREATE OR REPLACE VIEW CONSULTAR_VENTAS AS
+SELECT VENTAS.IDENTIFICADOR AS "IDENTIFICADOR DE VENTAS",
+COMPRADORES.NOMBRE AS "NOMBRE DEL COMPRADOR",
+VENTAS.FECHAVENTAS AS "FECHA DE VENTA",
+PARTES.NOMBRE AS "NOMBRE DE LA PARTE",
+VENTAS.CANTIDADPARTES AS "CANTIDAD VENDIDA",
+VENTAS.PRECIOTOTAL AS "PRECIO TOTAL DE VENTA"
+FROM PARTES JOIN ITEMSVENTAS ON PARTES.IDENTIFICADOR = ITEMSVENTAS.PARTES_IDENTIFICADOR 
+JOIN VENTAS ON ITEMSVENTAS.VENTAS_IDENTIFICADOR = VENTAS.IDENTIFICADOR 
+JOIN COMPRADORES ON VENTAS.COMPRADORES_IDENTIFICADOR = COMPRADORES.IDENTIFICADOR
+WHERE COMPRADORES.IDENTIFICADOR = 1236540178;
+
+
+--VistasOK
+SELECT * FROM CONSULTAR_COMPRAS;
+SELECT * FROM CONSULTAR_PARTES;
+SELECT * FROM CONSULTAR_VENTAS;
+
+--CRUDE
+CREATE OR REPLACE PACKAGE PC_VENTAS AS
+  PROCEDURE A(xDescripcion VARCHAR);
+  PROCEDURE E(xID VARCHAR);
+END PC_VENTAS;
+/
+
+CREATE OR REPLACE PACKAGE PC_COMPRAS AS
+  PROCEDURE A(xDescripcion VARCHAR);
+  PROCEDURE E(xID VARCHAR);
+END PC_COMPRAS;
+/
+
+CREATE OR REPLACE PACKAGE PC_ITEMVENTAS AS
+  PROCEDURE A(xPrecio VARCHAR,xCantidad VARCHAR);
+  PROCEDURE E(xID VARCHAR);
+END PC_ITEMVENTAS;
+/
+
+CREATE OR REPLACE PACKAGE PC_ITEMCOMPRAS AS
+  PROCEDURE A(xPrecio VARCHAR,xCantidad VARCHAR);
+  PROCEDURE E(xID VARCHAR);
+END PC_ITEMCOMPRAS;
+/
+
+CREATE OR REPLACE PACKAGE PC_CATEGORIAS AS
+  PROCEDURE A(xNombre VARCHAR,xDescripcion VARCHAR);
+  PROCEDURE M(xNombre VARCHAR,xDescripcion VARCHAR);
+  PROCEDURE E(xID VARCHAR);
+END PC_CATEGORIAS;
+/
+
+CREATE OR REPLACE PACKAGE PC_REPARACIONES AS
+  PROCEDURE A(xDescripcionSolucion VARCHAR,xDescripcionDanoParte VARCHAR);
+  PROCEDURE M(xDescripcionSolucion VARCHAR,xDescripcionDanoParte VARCHAR);
+  PROCEDURE E(xIDgarantias VARCHAR);
+END PC_REPARACIONES;
+/
+
+CREATE OR REPLACE PACKAGE PC_REEMPLAZOS AS
+  PROCEDURE A(xPiezasCambio VARCHAR,xDescripcionDa os VARCHAR);
+  PROCEDURE M(xPiezasCambio VARCHAR,xDescripcionDa os VARCHAR);
+  PROCEDURE E(xIDgarantias VARCHAR);
+END PC_REEMPLAZOS;
+/
+
+CREATE OR REPLACE PACKAGE PC_VENDEDORES AS
+  PROCEDURE A(xNIT VARCHAR, xNombre VARCHAR, xCorreo VARCHAR, xTelefono NUMBER, xDescripcion VARCHAR,xDireccion VARCHAR);
+  PROCEDURE M(xNIT VARCHAR, xNombre VARCHAR, xCorreo VARCHAR, xTelefono NUMBER, xDescripcion VARCHAR,xDireccion VARCHAR);
+  PROCEDURE E(xID VARCHAR);
+END PC_VENDEDORES;
+/
+
+CREATE OR REPLACE PACKAGE PC_COMPRADORES AS
+  PROCEDURE A(xNombre VARCHAR, xCorreo VARCHAR,xDescripcion VARCHAR,xDireccion VARCHAR,xPreferencias VARCHAR);
+  PROCEDURE M(xNombre VARCHAR, xCorreo VARCHAR,xDescripcion VARCHAR,xDireccion VARCHAR,xPreferencias VARCHAR);
+  PROCEDURE E(xID VARCHAR);
+END PC_COMPRADORES;
+/
+
+CREATE OR REPLACE PACKAGE PC_PARTES AS
+  PROCEDURE A(xNombre varchar, xPeso varchar, xPrecioCompra varchar, xPrecioVenta varchar, xStock varchar, xDescripcion varchar);
+  PROCEDURE M(xNombre varchar, xPeso varchar, xPrecioCompra varchar, xPrecioVenta varchar, xStock varchar, xDescripcion varchar);
+  PROCEDURE E(xID VARCHAR);
+END PC_PARTES;
+/
+
+CREATE OR REPLACE PACKAGE PC_VEHICULOS AS
+  PROCEDURE A(xMarca VARCHAR, xModelo VARCHAR,xCarroceria VARCHAR,xCilindrada VARCHAR,xModificaciones VARCHAR,xPlaca VARCHAR);
+  PROCEDURE M(xMarca VARCHAR, xModelo VARCHAR,xCarroceria VARCHAR,xCilindrada VARCHAR,xModificaciones VARCHAR,xPlaca VARCHAR);
+  PROCEDURE E(xPlaca VARCHAR);
+END PC_VEHICULOS;
+/
+
+--CRUDI
+CREATE OR REPLACE PACKAGE BODY PC_VEHICULOS AS
+  PROCEDURE A(xMarca VARCHAR, xModelo VARCHAR,xCarroceria VARCHAR,xCilindrada VARCHAR,xModificaciones VARCHAR,xPlaca VARCHAR) IS
+  BEGIN
+    INSERT INTO VEHICULOS(marca, modelo, carroceria, cilindrada, modificaciones,Placa)
+    VALUES (xMarca , xModelo ,xCarroceria ,xCilindrada,xModificaciones,xPlaca );
+  END A;
+
+  PROCEDURE M(xMarca VARCHAR, xModelo VARCHAR,xCarroceria VARCHAR,xCilindrada VARCHAR,xModificaciones VARCHAR,xPlaca VARCHAR) IS 
+  BEGIN
+    UPDATE VEHICULOS
+    SET Cilindrada = xCilindrada, modelo = xmodelo, carroceria = xcarroceria, modificaciones = xmodificaciones,placa=xPlaca
+    WHERE marca = xMarca;
+  END M;
+  
+  PROCEDURE E(xPlaca VARCHAR) IS
+  BEGIN
+    DELETE FROM VEHICULOS
+    WHERE placa = xPlaca;
+  END E;
+END PC_VEHICULOS;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_PARTES AS
+  PROCEDURE A(xNombre varchar, xPeso varchar, xPrecioCompra varchar, xPrecioVenta varchar, xStock varchar, xDescripcion varchar) IS
+  BEGIN 
+    INSERT INTO PARTES(nombre, peso,  PrecioCompra,PrecioVenta, stock,descripcion)
+    VALUES (xNombre , xPeso , xPrecioCompra , xPrecioVenta , xStock , xDescripcion);
+  END A;
+
+  PROCEDURE M(xNombre varchar, xPeso varchar, xPrecioCompra varchar, xPrecioVenta varchar, xStock varchar, xDescripcion varchar) IS 
+  BEGIN
+    UPDATE PARTES
+    SET PrecioCompra=xPrecioCompra , PrecioVenta=xPrecioVenta , stock=xStock , descripcion=xDescripcion
+    WHERE Nombre = xNombre;
+  END M;
+  
+  PROCEDURE E(xID VARCHAR) IS
+  BEGIN
+    DELETE FROM PARTES
+    WHERE identificador = xID;
+  END E;
+END PC_PARTES;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_COMPRADORES AS
+  PROCEDURE A(xNombre VARCHAR, xCorreo VARCHAR,xDescripcion VARCHAR,xDireccion VARCHAR,xPreferencias VARCHAR) IS
+  BEGIN 
+    INSERT INTO COMPRADORES(nombre, correo,Descripcion, direccion,preferencias)
+    VALUES (xNombre ,xDescripcion ,xPreferencias ,xDireccion , xCorreo);
+  END A;
+
+  PROCEDURE M(xNombre VARCHAR, xCorreo VARCHAR,xDescripcion VARCHAR,xDireccion VARCHAR,xPreferencias VARCHAR) IS 
+  BEGIN
+    UPDATE COMPRADORES
+    SET nombre=xNombre ,Descripcion=xDescripcion ,preferencias=xPreferencias ,direccion=xDireccion , correo=xCorreo
+    WHERE nombre = xNombre;
+  END M;
+  
+  PROCEDURE E(xID VARCHAR) IS
+  BEGIN
+    DELETE FROM COMPRADORES
+    WHERE identificador = xID;
+  END E;
+END PC_COMPRADORES;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_VENDEDORES AS
+  PROCEDURE A(xNIT VARCHAR, xNombre VARCHAR, xCorreo VARCHAR, xTelefono NUMBER, xDescripcion VARCHAR,xDireccion VARCHAR) IS
+  BEGIN 
+    INSERT INTO VENDEDORES(nit, nombre, correo, direccion, telefono, descripcion)
+    VALUES (xNIT , xNombre , xCorreo , xTelefono , xDescripcion ,xDireccion);
+  END A;
+
+  PROCEDURE M(xNIT VARCHAR, xNombre VARCHAR, xCorreo VARCHAR, xTelefono NUMBER, xDescripcion VARCHAR,xDireccion VARCHAR) IS 
+  BEGIN
+    UPDATE VENDEDORES
+    SET Nombre = xNombre, Correo = xCorreo,Telefono = xTelefono,Descripcion = xDescripcion,Direccion=xDireccion
+    WHERE nit = xnit;
+  END M;
+  
+  PROCEDURE E(xID VARCHAR) IS
+  BEGIN
+    DELETE FROM VENDEDORES
+    WHERE identificador = xID;
+  END E;
+END PC_VENDEDORES;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_REEMPLAZOS AS
+  PROCEDURE A(xPiezasCambio VARCHAR,xDescripcionDa os VARCHAR) IS
+  BEGIN
+    INSERT INTO REEMPLAZOS(PiezasCambio,DescripcionDanos)
+    VALUES (xPiezasCambio,xDescripcionDa os );
+  END A;
+
+  PROCEDURE M(xPiezasCambio VARCHAR,xDescripcionDa os VARCHAR) IS 
+  BEGIN
+    UPDATE REEMPLAZOS
+    SET DescripcionDanos = xDescripcionDa os
+    WHERE PiezasCambio = xPiezasCambio;
+  END M;
+  
+  PROCEDURE E(xIDgarantias VARCHAR) IS
+  BEGIN
+    DELETE FROM REEMPLAZOS
+    WHERE garantias_identificador = xIDgarantias;
+  END E;
+END PC_REEMPLAZOS;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_REPARACIONES AS
+  PROCEDURE A(xDescripcionSolucion VARCHAR,xDescripcionDanoParte VARCHAR) IS
+  BEGIN
+    INSERT INTO REPARACIONES(DescripcionSolucion,DescripcionDanoParte)
+    VALUES (xDescripcionSolucion,xDescripcionDanoParte );
+  END A;
+
+  PROCEDURE M(xDescripcionSolucion VARCHAR,xDescripcionDanoParte VARCHAR) IS 
+  BEGIN
+    UPDATE REPARACIONES
+    SET DescripcionSolucion = xDescripcionSolucion
+    WHERE DescripcionDanoParte = xDescripcionDanoParte;
+  END M;
+  
+  PROCEDURE E(xIDgarantias VARCHAR) IS
+  BEGIN
+    DELETE FROM REPARACIONES
+    WHERE garantias_identificador = xIDgarantias;
+  END E;
+END PC_REPARACIONES;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_CATEGORIAS AS
+  PROCEDURE A(xNombre VARCHAR,xDescripcion VARCHAR) IS
+  BEGIN
+    INSERT INTO CATEGORIAS(nombre,descripcion)
+    VALUES (xNombre,xDescripcion );
+  END A;
+
+  PROCEDURE M(xNombre VARCHAR,xDescripcion VARCHAR) IS 
+  BEGIN
+    UPDATE CATEGORIAS
+    SET descripcion = xDescripcion
+    WHERE Nombre = xNombre;
+  END M;
+  
+  PROCEDURE E(xID VARCHAR) IS
+  BEGIN
+    DELETE FROM CATEGORIAS
+    WHERE identificador = xID;
+  END E;
+END PC_CATEGORIAS;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_ITEMCOMPRAS AS
+  PROCEDURE A(xPrecio VARCHAR,xCantidad VARCHAR) IS
+  BEGIN
+    INSERT INTO ITEMSCOMPRAS(precio,cantidad)
+    VALUES (xPrecio ,xCantidad);
+  END A;
+
+  PROCEDURE E(xID VARCHAR) IS
+  BEGIN
+    DELETE FROM ITEMSCOMPRAS
+    WHERE identificador = xID;
+  END E;
+END PC_ITEMCOMPRAS;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_ITEMVENTAS AS
+  PROCEDURE A(xPrecio VARCHAR,xCantidad VARCHAR) IS
+  BEGIN
+    INSERT INTO ITEMSVENTAS(precio,cantidad)
+    VALUES (xPrecio ,xCantidad);
+  END A;
+  
+  PROCEDURE E(xID VARCHAR) IS
+  BEGIN
+    DELETE FROM ITEMSVENTAS
+    WHERE identificador = xID;
+  END E;
+END PC_ITEMVENTAS;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_COMPRAS AS
+  PROCEDURE A(xDescripcion VARCHAR) IS
+  BEGIN
+    INSERT INTO COMPRAS(descripcion)
+    VALUES (xDescripcion);
+  END A;
+
+  PROCEDURE E(xID VARCHAR) IS
+  BEGIN
+    DELETE FROM COMPRAS
+    WHERE identificador = xID;
+  END E;
+END PC_COMPRAS;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_VENTAS AS
+  PROCEDURE A(xDescripcion VARCHAR) IS
+  BEGIN
+    INSERT INTO VENTAS(descripcion)
+    VALUES (xDescripcion);
+  END A;
+
+  PROCEDURE E(xID VARCHAR) IS
+  BEGIN
+    DELETE FROM VENTAS
+    WHERE identificador = xID;
+  END E;
+END PC_VENTAS;
+/
+
+
+--CRUDEOK-- 
+
+-- Prueba para el procedimiento A del paquete PC_VEHICULOS
+BEGIN
+  PC_VEHICULOS.A('MarcaPrueba', 'ModeloPrueba', 'CarroceriaPrueba', 'CilindradaPrueba', 'ModificacionesPrueba', 'PlacaPrueba');
+END;
+/
+
+-- Prueba para el procedimiento M del paquete PC_VEHICULOS
+BEGIN
+  PC_VEHICULOS.M('MarcaPrueba', 'ModeloPruebaModificado', 'CarroceriaPrueba', 'CilindradaPrueba', 'ModificacionesPrueba', 'PlacaPrueba');
+END;
+/
+
+-- Prueba para el procedimiento E del paquete PC_VEHICULOS
+BEGIN
+  PC_VEHICULOS.E('PlacaPrueba');
+END;
+/
+
+-- Prueba para el paquete PC_CATEGORIAS
+DECLARE
+  vNombre VARCHAR(100);
+  vDescripcion VARCHAR(100);
+BEGIN
+  vNombre := 'Nombre de prueba';
+  vDescripcion := 'Descripci n de prueba';
+  PC_CATEGORIAS.A(vNombre, vDescripcion);
+END;
+/
+
+-- Prueba para el procedimiento A del paquete PC_PARTES
+BEGIN
+  PC_PARTES.A('NombrePrueba', 'PesoPrueba', 'PrecioCompraPrueba', 'PrecioVentaPrueba', 'StockPrueba', 'DescripcionPrueba');
+END;
+/
+
+-- Prueba para el procedimiento M del paquete PC_PARTES
+BEGIN
+  PC_PARTES.M('NombrePrueba', 'PesoPrueba', 'PrecioCompraModificado', 'PrecioVentaModificado', 'StockPrueba', 'DescripcionPrueba');
+END;
+/
+
+-- Prueba para el procedimiento E del paquete PC_PARTES
+BEGIN
+  PC_PARTES.E('IDPrueba');
+END;
+/
+
+-- Prueba para el procedimiento A del paquete PC_COMPRADORES
+BEGIN
+  PC_COMPRADORES.A('NombrePrueba', 'CorreoPrueba', 'DescripcionPrueba', 'DireccionPrueba', 'PreferenciasPrueba');
+END;
+/
+
+-- Prueba para el procedimiento M del paquete PC_COMPRADORES
+BEGIN
+  PC_COMPRADORES.M('NombrePrueba', 'CorreoModificado', 'DescripcionPrueba', 'DireccionPrueba', 'PreferenciasPrueba');
+END;
+/
+
+-- Prueba para el procedimiento E del paquete PC_COMPRADORES
+BEGIN
+  PC_COMPRADORES.E('IDPrueba');
+END;
+/
+
+--ACTORES E
+CREATE OR REPLACE PACKAGE PC_GERENTE_ROLE AS
+    PROCEDURE Agregar_Compra(xDescripcion VARCHAR);
+    PROCEDURE Agregar_ItemsCompra(xPrecio VARCHAR,xCantidad VARCHAR);
+    PROCEDURE Eliminar_ItemsCompra(xID CHAR);
+    PROCEDURE Agregar_Partes(xNombre varchar, xPeso varchar, xPrecioCompra varchar, xPrecioVenta varchar, xStock varchar, xDescripcion varchar);
+    PROCEDURE Modificar_Partes(xNombre varchar, xPeso varchar, xPrecioCompra varchar, xPrecioVenta varchar, xStock varchar, xDescripcion varchar);
+    PROCEDURE Eliminar_Partes(xID CHAR);
+    PROCEDURE Agregar_Categorias(xNombre VARCHAR2, xDescripcion VARCHAR2);
+    PROCEDURE Modificar_Categorias(xNombre VARCHAR2, xDescripcion VARCHAR2);
+    PROCEDURE Eliminar_Categorias(xID CHAR);
+END PC_GERENTE_ROLE;
+/
+
+CREATE OR REPLACE PACKAGE PC_COMPRADOR_ROLE AS
+
+    PROCEDURE Agregar_Vehiculos(xMarca VARCHAR, xModelo VARCHAR,xCarroceria VARCHAR,xCilindrada VARCHAR,xModificaciones VARCHAR,xPlaca VARCHAR);
+    PROCEDURE Modificar_Vehiculos(xMarca VARCHAR, xModelo VARCHAR,xCarroceria VARCHAR,xCilindrada VARCHAR,xModificaciones VARCHAR,xPlaca VARCHAR);
+    PROCEDURE Eliminar_Vehiculos(xPlaca VARCHAR2);
+    PROCEDURE Agregar_ItemsVentas(xPrecio VARCHAR,xCantidad VARCHAR);
+    PROCEDURE Eliminar_ItemsVentas(xID CHAR);
+END PC_COMPRADOR_ROLE;
+/
+
+
+CREATE OR REPLACE PACKAGE PC_VENDEDOR_ROLE AS
+    PROCEDURE Agregar_Vendedores(xNIT VARCHAR, xNombre VARCHAR, xCorreo VARCHAR, xTelefono NUMBER, xDescripcion VARCHAR,xDireccion VARCHAR);
+    PROCEDURE Modificar_Vendedores(xNIT VARCHAR, xNombre VARCHAR, xCorreo VARCHAR, xTelefono NUMBER, xDescripcion VARCHAR,xDireccion VARCHAR);
+    PROCEDURE Eliminar_Vendedores(xID CHAR);
+END PC_VENDEDOR_ROLE;
+/
+
+--ACTORES I 
+CREATE OR REPLACE PACKAGE BODY PC_GERENTE_ROLE AS
+PROCEDURE Agregar_Compra (xDescripcion VARCHAR) IS
+  BEGIN
+      PC_COMPRAS.A (xDescripcion);
+  END Agregar_Compra;
+
+PROCEDURE Agregar_ItemsCompra (xPrecio VARCHAR,xCantidad VARCHAR) IS
+  BEGIN
+      PC_ITEMCOMPRAS.A (xPrecio, xCantidad);
+  END Agregar_ItemsCompra;
+
+PROCEDURE Eliminar_ItemsCompra (xID CHAR) IS
+  BEGIN
+      PC_ITEMCOMPRAS.E (xID);
+  END Eliminar_ItemsCompra;
+
+PROCEDURE Agregar_Partes (xNombre varchar, xPeso varchar, xPrecioCompra varchar, xPrecioVenta varchar, xStock varchar, xDescripcion varchar) IS
+  BEGIN
+      PC_PARTES.A (xNombre, xPeso, xDescripcion, xPrecioCompra, xPrecioVenta, xStock);
+  END Agregar_Partes;
+
+PROCEDURE Modificar_Partes(xNombre varchar, xPeso varchar, xPrecioCompra varchar, xPrecioVenta varchar, xStock varchar, xDescripcion varchar) IS
+  BEGIN
+      PC_PARTES.M (xNombre, xPeso, xDescripcion, xPrecioCompra, xPrecioVenta, xStock);
+  END Modificar_Partes;
+
+PROCEDURE Eliminar_Partes(xID CHAR) IS
+  BEGIN
+      PC_PARTES.E (xID);
+  END Eliminar_Partes;
+
+PROCEDURE Agregar_Categorias(xNombre VARCHAR2, xDescripcion VARCHAR2) IS
+  BEGIN
+      PC_CATEGORIAS.A (xNombre, xDescripcion);
+  END Agregar_Categorias;
+
+PROCEDURE Modificar_Categorias (xNombre VARCHAR2, xDescripcion VARCHAR2) IS
+  BEGIN
+      PC_CATEGORIAS.M (xNombre, xDescripcion);
+  END Modificar_Categorias;
+
+PROCEDURE Eliminar_Categorias (xID CHAR) IS
+  BEGIN
+      PC_CATEGORIAS.E (xID);
+  END Eliminar_Categorias;
+
+END PC_GERENTE_ROLE;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_COMPRADOR_ROLE AS
+PROCEDURE Agregar_vehiculos (xMarca VARCHAR, xModelo VARCHAR,xCarroceria VARCHAR,xCilindrada VARCHAR,xModificaciones VARCHAR,xPlaca VARCHAR) IS
+  BEGIN
+      PC_VEHICULOS.A (xMarca, xModelo, xCarroceria,xCilindrada, xModificaciones,xPlaca);
+  END Agregar_vehiculos;
+
+PROCEDURE Modificar_Vehiculos (xMarca VARCHAR, xModelo VARCHAR,xCarroceria VARCHAR,xCilindrada VARCHAR,xModificaciones VARCHAR,xPlaca VARCHAR) IS
+  BEGIN
+      PC_VEHICULOS.M (xMarca, xModelo, xCarroceria,xCilindrada, xModificaciones,xPlaca);
+  END Modificar_vehiculos;
+
+PROCEDURE Eliminar_vehiculos (xPlaca VARCHAR2) IS
+  BEGIN
+      PC_VEHICULOS.E (xPlaca);
+  END Eliminar_vehiculos;
+
+
+PROCEDURE Agregar_ItemsVentas (xPrecio VARCHAR,xCantidad VARCHAR) IS
+  BEGIN
+      PC_ITEMVENTAS.A (xPrecio,xCantidad);
+  END Agregar_ItemsVentas;
+
+PROCEDURE Eliminar_ItemsVentas (xID CHAR) IS
+  BEGIN
+      PC_ITEMVENTAS.E (xID);
+  END Eliminar_ItemsVentas;
+
+END PC_COMPRADOR_ROLE;
+/
+
+CREATE OR REPLACE PACKAGE BODY PC_VENDEDOR_ROLE  AS
+PROCEDURE Agregar_vendedores(xNIT VARCHAR, xNombre VARCHAR, xCorreo VARCHAR, xTelefono NUMBER, xDescripcion VARCHAR,xDireccion VARCHAR) IS
+  BEGIN 
+      PC_VENDEDORES.A (xNombre, xNit, xCorreo, xDireccion, xTelefono, xDescripcion);
+  END agregar_vendedores;
+
+PROCEDURE Modificar_vendedores(xNIT VARCHAR, xNombre VARCHAR, xCorreo VARCHAR, xTelefono NUMBER, xDescripcion VARCHAR,xDireccion VARCHAR) IS
+  BEGIN 
+      PC_VENDEDORES.M (xNombre, xNit, xCorreo, xDireccion, xTelefono, xDescripcion);
+  END modificar_vendedores;
+
+PROCEDURE Eliminar_vendedores(xID CHAR) IS
+  BEGIN 
+      PC_VENDEDORES.E (xID);
+  END eliminar_vendedores;
+END PC_VENDEDOR_ROLE;
+
+
+--Roles y Permisos
+CREATE USER USER01 IDENTIFIED BY PASSWORD01;
+CREATE USER USER02 IDENTIFIED BY PASSWORD02;
+CREATE USER USER03 IDENTIFIED BY PASSWORD03;
+CREATE USER USER04 IDENTIFIED BY PASSWORD04;
+
+CREATE ROLE USER_GERENTE_ROLE;
+GRANT EXECUTE ON PC_GERENTE_ROLE TO USER_GERENTE_ROLE;
+GRANT USER_GERENTE_ROLE TO USER01;
+
+CREATE ROLE USER_COMPRADOR_ROLE;
+GRANT EXECUTE ON PC_COMPRADOR_ROLE TO USER_COMPRADOR_ROLE;
+GRANT USER_COMPRADOR_ROLE TO USER02;
+
+CREATE ROLE USER_VENDEDOR_ROLE;
+GRANT EXECUTE ON PC_VENDEDOR_ROLE TO USER_VENDEDOR_ROLE;
+GRANT USER_VENDEDOR_ROLE TO USER03;
+
+CREATE USER_ENCARGADOVENTAS_ROLE;
+GRANT SELECT ON CONSULTAR_VENTAS
+GRANT USER_ENCARGADOVENTAS TO USER04;
+
+
+--Seguridad OK
+CONNECT USER01/PASSWORD01;
+BEGIN
+  PC_GERENTE_ROLE.Modificar_Compra('Co2', 'Turbo Garrett T3', SYSDATE, 300, 'V5');
+END;
+/
+
+
+
+
+--XSeguridad
+DROP PACKAGE PC_GERENTE_ROLE;
+DROP PACKAGE PC_COMPRADOR_ROLE;
+DROP PACKAGE PC_VENDEDOR_ROLE;
+
+--XTriggers
+DROP TRIGGER CATEGORIAS_IDENTIFICADOR_BI;
+DROP TRIGGER VENDEDORES_IDENTIFICADOR_BI;
+DROP TRIGGER COMPRAS_IDENTIFICADOR_BI;
+DROP TRIGGER GARANTIAS_IDENTIFICADOR_BI;
+DROP TRIGGER PARTES_IDENTIFICADOR_BI;
+DROP TRIGGER ITEMSCOMPRAS_IDENTIFICADOR_BI;
+DROP TRIGGER ITEMSVENTAS_IDENTIFICADOR_BI;
+DROP TRIGGER VENTAS_IDENTIFICADOR_BI;
+DROP TRIGGER VENDEDORES_FECHAREGISTRO_BI;
+DROP TRIGGER COMPRAS_FECHACOMPRAS_BI;
+DROP TRIGGER COMPRADORES_FECHAREGISTRO_BI;
+DROP TRIGGER VENTAS_FECHAVENTAS_BI;
+DROP TRIGGER ACTUALIZAR_CATEGORIASVENDEDORES_IDENTIFICADOR_AU;
+DROP TRIGGER ACTUALIZAR_CATEGORIASPARTES_IDENTIFICADOR_AU;
+DROP TRIGGER ACTUALIZAR_VENDEDORESCOMPRAS_IDENTIFICADOR_AU;
+DROP TRIGGER ACTUALIZAR_ITEMSCOMPRASCOMPRAS_IDENTIFICADOR_AU;
+DROP TRIGGER ACTUALIZAR_ITEMSCOMPRASPARTES_IDENTIFICADOR_AU;
+DROP TRIGGER ACTUALIZAR_PARTESGARANTIAS_IDENTIFICADOR_AU;
+DROP TRIGGER ACTUALIZAR_REPARACIONESGARANTIAS_IDENTIFICADOR_AU;
+DROP TRIGGER ACTUALIZAR_REEMPLAZOSGARANTIAS_IDENTIFICADOR_AU;
+DROP TRIGGER ACTUALIZAR_VENTASITEMSVENTAS_IDENTIFICADOR_AU;
+DROP TRIGGER ACTUALIZAR_VENTASCOMPRADORES_IDENTIFICADOR_AU;
+DROP TRIGGER ACTUALIZAR_VEHICULOSCOMPRADORES_IDENTIFICADOR_AU;
+DROP TRIGGER BORRAR_CATEGORIAVENDEDORES_BD;
+DROP TRIGGER NOTDELETE_PARTESITEMSCOMPRAS_BD;
+DROP TRIGGER NOTDELETE_CATEGORIASPARTES_BD;
+DROP TRIGGER NOTDELETE_GARANTIASPARTES_BD;
+DROP TRIGGER NOTDELETE_PARTESITEMSVENTAS_BD;
+DROP TRIGGER NOTDELETE_COMPRADORESVENTAS_BD;
+DROP TRIGGER INCREMENTAR_STOCKCOMPRAS_AI;
+DROP TRIGGER DECREMENTO_STOCKVENTAS_AI;
+DROP TRIGGER PRECIOTOTAL_ITEMSCOMPRASCOMPRAS_AI;
+DROP TRIGGER PRECIOTOTAL_ITEMSVENTASVENTAS_AI;
+DROP TRIGGER PARTESTOTAL_ITEMSVENTASVENTAS_AI;
+
+
+--xVISTAS
+DROP VIEW CONSULTAR_COMPRAS;
+DROP VIEW CONSULTAR_PARTES;
+DROP VIEW CONSULTAR_VENTAS;
+
+--XCrud
+DROP PACKAGE PC_VENTAS;
+DROP PACKAGE PC_COMPRAS;
+DROP PACKAGE PC_ITEMVENTAS;
+DROP PACKAGE PC_ITEMCOMPRAS;
+DROP PACKAGE PC_CATEGORIAS;
+DROP PACKAGE PC_REPARACIONES;
+DROP PACKAGE PC_REEMPLAZOS;
+DROP PACKAGE PC_VENDEDORES;
+DROP PACKAGE PC_COMPRADORES;
+DROP PACKAGE PC_PARTES;
+DROP PACKAGE PC_VEHICULOS;
+
+---Xpoblar
+DELETE FROM VEHICULOS;
+DELETE FROM ITEMSVENTAS;
+DELETE FROM VENTAS;
+DELETE FROM COMPRADORES;
+DELETE FROM REEMPLAZOS;
+DELETE FROM REPARACIONES;
+DELETE FROM ITEMSCOMPRAS;
+DELETE FROM PARTES;
+DELETE FROM GARANTIAS;
+DELETE FROM COMPRAS;
+DELETE FROM VENDEDORES;
+DELETE FROM CATEGORIAS;
+
+
+-- XTABLAS--
+DROP TABLE VEHICULOS;
+DROP TABLE ITEMSVENTAS;
+DROP TABLE VENTAS;
+DROP TABLE COMPRADORES; 
+DROP TABLE REEMPLAZOS;
+DROP TABLE REPARACIONES;
+DROP TABLE ITEMSCOMPRAS;
+DROP TABLE PARTES;
+DROP TABLE GARANTIAS;
+DROP TABLE COMPRAS;
+DROP TABLE VENDEDORES;
+DROP TABLE CATEGORIAS;
+
+DROP TABLE NOTIFICACION;
+DROP TABLE ALERTA;
+DROP TABLE AVISOS;
+
+--CASO DE PRUEBA 1
+--Ivan y Sebastian se conocieron un dia en el autodromo de Tocancipa pues ambos estan disputando la final de los piques G3, Ivan tiene un Audi Rs3 modelo 2024, Sportback,
+--donde le tiene filtro de alto flujo, rines, intake y Stage 2 todos reconocen el carro pues su placa es IST009 y es cilindrada 2500.
+--Sebastian tiene un Porsche 911 GT3 RS modelo 2023, donde tiene un escape, su placa es SSS001 y es cilindrada 4000.
+
+--en medio de la carrera ambos forzaron sus vehiuculos que rompieron varias partes como el bloque y tuberias pero el ganador fue Ivan, despues de un tiempo se volvieron
+--amigos,
+
+
+--Ivan junto a su amigo Sebastian han tenido varios proyectos automovilisticos Ivan ha tenido mas de 5 vehiculos de todas las categorias como carreras, 4x4, pista y karts
+--sebastian se ha inclinado mas por los deportivos, de tanto estar con el tema de los carros han tenido percanses de romper partes, ambos tienen distribuidores preferidos
+--pero les dan muchos precios y no consolidan donde comprar, Ivan le propone Sebastian crear una distribuidora de partes donde los diferentes proveedores puedan promocionarse
+--y asi ambos ganan plata para seguir corriendo.
+
+--Al crear la base de datos ellos fueron los primeros dos clientes
+--Aca se ve la insercion de datos y la automatizacion--
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (1076241501, 'Ivan Santiago F. Torres', 'Amante a los vehiculos deportivos y aprender cada dia mas', 'Vehiculos cuarto de milla y sleepers', 'CARRERA 1c # 5-92', 'ivaaNTaWers@opp.com', '14-04-2024');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values (7892110648, 'Sebastian Silva', 'Competidor aficionado en el cuarto de milla', 'Competir a nivel nacional en el cuarto de milla', 'Transversal 18 #13c-29 ', 'SeTraSil@finder.com', '14-04-2024');
+
+insert into VEHICULOS values ('AUDI', 'RS3', 'SportBack', '2500', 'Filtro de alto flujo, rines, Stage2', 'IST009', 1076241501 );
+insert into VEHICULOS values ('PORSCHE', '911 GT3 RS', 'Sport', '4000', 'eSCAPE', 'SSS001', 7892110648 );
+
+--Mucho tiempo despues ambos se ven en la necesidad de ampliar su negocio asi que acceden a la posibilidad de a adir el servicio de blindaje de vehiculos asi que Deciden
+--abrir una convocatoria para nuevos proveedores
+
+insert into CATEGORIAS values ('Ca51', 'Blindaje', 'Sistema de seguridad para el vehiculo');
+
+--La se orita Laura Herrera vio lo convocatoria y con un dinerito de sus ahorros decidio crear una compa ia acerca de blindaje de vehiculos, 
+--decide inspeccionar los registros que le solicito al Gerente durante una cumbre ejecutiva. 
+--Laura al pasar los dias dicide registrarse en la base de datos, al registrarse en la base de datos se percata que necesita diligenciar un formulario donde tiene datos 
+--como nombre, nit, correo, direccion, telefono, descripcion, categorias_identificador sin pensarlo dos veces inserta los DATOS
+--insertar los datos, ac  se evidencian checks, disparadores de automatizacion de identificador--
+insert into VENDEDORES Values ('V1','BlindaTeck', 88814783080208885248, 'blindateckSekservice.org', 'Calle aruba #128', 010368747800555, 'empresa especializada en blindajes y seguridad', '27/05/2024', 'Ca50');
+--cuando inserto los datos se da cuenta que la base de datos de Motor Team Colombia le arroja un error e inspeccionando los datos se percata que no coloco @ en el correo
+--asi que decide volver a insertar 
+insert into VENDEDORES values ('V1','BlindaTeck', 88814783080208885248, 'blindateckSek@service.org', 'Calle aruba #128', 010368747800555, 'empresa especializada en blindajes y seguridad', '27/05/2024', 'Ca51');
+
+--Ivan en calidad de gerente para tener un peque o Stock dentro de la tienda, como muestra decide realizar la primer compra
+--Laura decide Darles garantia en caso de humedad asi que Ivan lo inserta
+insert into GARANTIAS (DescripcionMotivo) values ('Garantia por humedad');
+
+insert into COMPRAS (descripcion, PrecioTotal, vendedores_identificador ) values ('Blindaje ligero', 500, 'V1');
+
+--y lo registra en partes 
+insert into PARTES (identificador, nombre, peso, descripcion, PrecioCompra,PrecioVenta, categorias_identificador, garantias_identificador, stock) values ( 'P1', 'Blindaje ligero', 20, 'Blindaje ligero para vehiculos de alta gama', 500, 700, 'Ca51', 'G2', 1);
+
+
+insert into ITEMSCOMPRAS (precio, cantidad, compras_identificador, partes_identificador) values (500, 1, 'Co1', 'P1');    
+
+
+--Ivan decide que es hora de hacer la primera venta y decide venderle a Sebastian el blindaje ligero
+insert into VENTAS (descripcion, cantidadPartes, PrecioTotal, compradores_identificador) values ('Blindaje ligero', 1, 700, 7892110648);
+insert into ITEMSVENTAS (precio, cantidad, ventas_identificador, partes_identificador) values (700, 1, 'Ve1', 'P1');
+
+
+--PRUEBA 2
+
+insert into PARTES  values('P2', 'Capot en fibra de carbono forjada', 10, 'Capot en fibra de carbono forjada', 100, 700, 'Ca5', 'G4', 5);
+CREATE OR REPLACE VIEW CONSULTAR_PARTES AS SELECT CATEGORIAS.NOMBRE AS "NOMBRE DE LA CATEGORIA",
+PARTES.NOMBRE AS "NOMBRE DE LA PARTE",
+PARTES.DESCRIPCION AS "DESCRIPCION DE LA PARTE",
+PARTES.PRECIOVENTA AS "PRECIO DE VENTA",
+PARTES.STOCK AS "STOCK EN TIENDA"
+FROM PARTES 
+JOIN CATEGORIAS ON PARTES.CATEGORIAS_IDENTIFICADOR = CATEGORIAS.IDENTIFICADOR
+WHERE PARTES.NOMBRE = 'Capot en fibra de carbono forjada';
+
+Uno hombre llamado Simon Tiene una novia llamada Ana que les gusta mucho los carros, siempre a sido del agrado de ellos y por eso participan
+en algunos eventos que son para ver y admirar diferentes tipos de carros, un dia ellos compraron un carro que admiraban mucho pero no sabian
+nada de su informacion y por eso averiguaron todo lo que tiene que ver con el en una empresa llamada motor team colombia,ahi con los datos
+de los dos podian acceder y averiguar todo lo que nesecitaban
+
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values(1056745500, 'Simon Diaz', 'Amante a los carros deportivos', 'Vehiculos 4x4', 'CARRERA 5 # 7-90', 'simon.diaz@mail.escuelaing.edu.co', '22-07-2000');
+insert into COMPRADORES (identificador, nombre, descripcion, preferencias, direccion, correo, FechaDeRegistro) values(1056755578, 'Ana Guerra', 'Amante a los carros deportivos y clasicos', 'Vehiculos 2x4', 'CARRERA 1 # 2-50', 'ana.guerra@mail.escuelaing.edu.co','12-11-2002');
+
+Luego de registrarse encontrarian un apartado de vehiculos que podrian colocar la informacion del vehiculo que era de su inquietud.
+insert into VEHICULOS (marca, modelo, carroceria, cilindrada, modificaciones, placa, compradores_identificador) values ('Camaro', 'SS', 'Coupe', '5000', null, 'SAS086', 1056745500);
+
+Ana como queria que su vehiculo corriera un poco mas decide averiguar partes para aumentar el rendimiento, asi que deciden comprar un capot
+en fibra de carbono forjada asi que accede a consultar la parte
+
+SELECT * FROM CONSULTAR_PARTES;
+
+Asi que deciden comprarla
+INSERT INTO VENTAS values ('Ve1','Capot en fibra de carbono forjada', '28/05/2024',3, 1056755578, 600);
+insert into ITEMSVENTAS (identificador, cantidad, precio, partes_identificador, ventas_identificador) Values ('IV4', 3, 200, 'P2', 'Ve1');
